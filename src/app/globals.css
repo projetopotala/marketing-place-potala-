@@ -1,26 +1,907 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --potala-bg: #041126;
+  --potala-bg-secondary: #071a32;
+  --potala-panel: #0b1e38;
+  --potala-gold: #d5a54f;
+  --potala-gold-light: #e9bb64;
+  --potala-cream: #f3ecdf;
+  --potala-text: #f5f1e8;
+  --potala-text-muted: #9ca8b7;
+  --potala-border: rgb(213 165 79 / 22%);
+  --potala-border-strong: rgb(213 165 79 / 45%);
+  --potala-shadow: 0 18px 40px rgb(0 0 0 / 28%);
+  --potala-radius: 0.75rem;
+  --potala-radius-control: 0.5rem;
+  --potala-radius-button: 0.375rem;
+  --potala-container-max: 87.5rem;
+  --background: var(--potala-bg);
+  --foreground: var(--potala-text);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-potala-bg: var(--potala-bg);
+  --color-potala-bg-secondary: var(--potala-bg-secondary);
+  --color-potala-panel: var(--potala-panel);
+  --color-potala-gold: var(--potala-gold);
+  --color-potala-gold-light: var(--potala-gold-light);
+  --color-potala-cream: var(--potala-cream);
+  --color-potala-text: var(--potala-text);
+  --color-potala-muted: var(--potala-text-muted);
+  --color-potala-border: var(--potala-border);
+  --font-sans: var(--font-potala-sans);
+  --font-serif: var(--font-potala-serif);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-width: 320px;
+  background: var(--potala-bg);
+  color: var(--potala-text);
+  font-family: var(--font-potala-sans), system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: 2px solid var(--potala-gold-light);
+  outline-offset: 3px;
+}
+
+.potala-container {
+  width: min(calc(100% - 2.5rem), var(--potala-container-max));
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .potala-container {
+    width: min(calc(100% - 3rem), var(--potala-container-max));
+  }
+}
+
+@media (min-width: 1280px) {
+  .potala-container {
+    width: min(calc(100% - 3.25rem), var(--potala-container-max));
+  }
+}
+
+.potala-wide-container {
+  width: min(calc(100% - 2.5rem), 100rem);
+  margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .potala-wide-container {
+    width: min(calc(100% - 3rem), 100rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .potala-wide-container {
+    width: min(86.5vw, 100rem);
+  }
+}
+
+.potala-hero-overlay {
+  background: linear-gradient(
+    90deg,
+    rgba(3, 17, 38, 0.94) 0%,
+    rgba(3, 17, 38, 0.8) 26%,
+    rgba(3, 17, 38, 0.38) 48%,
+    rgba(3, 17, 38, 0.08) 72%,
+    rgba(3, 17, 38, 0.1) 100%
+  );
+}
+
+.potala-hero-overlay-mobile {
+  background: linear-gradient(
+    90deg,
+    rgba(3, 17, 38, 0.96) 0%,
+    rgba(3, 17, 38, 0.88) 34%,
+    rgba(3, 17, 38, 0.48) 58%,
+    rgba(3, 17, 38, 0.18) 78%,
+    rgba(3, 17, 38, 0.14) 100%
+  );
+}
+
+.potala-section-dark {
+  background: var(--potala-bg);
+  color: var(--potala-text);
+}
+
+.potala-section-cream {
+  background: var(--potala-cream);
+  color: var(--potala-bg);
+}
+
+.featured-categories-container {
+  width: min(calc(100% - 2.25rem), 90rem);
+  margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .featured-categories-container {
+    width: min(88vw, 90rem);
+  }
+}
+
+.featured-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+@media (min-width: 640px) {
+  .featured-categories-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.65rem, 1vw, 0.85rem);
+  }
+}
+
+@media (min-width: 900px) {
+  .featured-categories-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .featured-categories-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: clamp(0.65rem, 0.9vw, 0.9rem);
+  }
+}
+
+.featured-category-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid rgba(213, 165, 79, 0.22);
+  border-radius: 0.7rem;
+  background: #071a32;
+  box-shadow: 0 8px 22px rgba(3, 17, 38, 0.16);
+  transition:
+    border-color 240ms ease,
+    transform 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.featured-category-card:hover {
+  border-color: rgba(213, 165, 79, 0.48);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(3, 17, 38, 0.2);
+}
+
+.featured-category-card:focus-visible {
+  outline: 2px solid var(--potala-gold-light);
+  outline-offset: 3px;
+}
+
+.category-heading-ornament {
+  position: relative;
+  display: inline-block;
+  width: 2.1rem;
+  height: 1px;
+  flex-shrink: 0;
+  background: rgb(213 165 79 / 55%);
+}
+
+.category-heading-ornament::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -0.28rem;
+  width: 0.34rem;
+  height: 0.34rem;
+  transform: translateY(-50%) rotate(45deg);
+  background: rgb(213 165 79 / 72%);
+}
+
+.category-heading-ornament--reverse::after {
+  right: auto;
+  left: -0.28rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featured-category-card,
+  .featured-category-card:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+.potala-card {
+  border: 1px solid var(--potala-border);
+  border-radius: var(--potala-radius);
+  background: var(--potala-panel);
+  box-shadow: var(--potala-shadow);
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.potala-card:hover,
+.potala-card:focus-within {
+  border-color: var(--potala-border-strong);
+  transform: translateY(-2px);
+}
+
+.potala-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: var(--potala-radius-button);
+  border: 1px solid transparent;
+  font-family: var(--font-potala-sans), system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.potala-btn:hover {
+  transform: translateY(-1px);
+}
+
+.potala-btn-primary {
+  background: linear-gradient(180deg, var(--potala-gold-light), var(--potala-gold));
+  color: var(--potala-bg);
+}
+
+.potala-btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.potala-btn-secondary {
+  background: transparent;
+  border-color: var(--potala-border-strong);
+  color: var(--potala-text);
+}
+
+.potala-btn-secondary:hover {
+  border-color: var(--potala-gold-light);
+  color: var(--potala-gold-light);
+}
+
+.potala-btn-ghost {
+  background: transparent;
+  border-color: var(--potala-border-strong);
+  color: var(--potala-gold);
+}
+
+.potala-btn-ghost:hover {
+  background: rgb(213 165 79 / 10%);
+  color: var(--potala-gold-light);
+}
+
+.potala-input {
+  width: 100%;
+  min-height: 3.25rem;
+  border: 1px solid var(--potala-border);
+  border-radius: var(--potala-radius-control);
+  background: #020b18;
+  color: var(--potala-text);
+  padding: 0.75rem 1.15rem;
+  font: inherit;
+}
+
+.potala-input::placeholder {
+  color: var(--potala-text-muted);
+}
+
+.potala-scroll-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.potala-scroll-row > * {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+}
+
+.potala-scroll-row::-webkit-scrollbar {
+  height: 0.4rem;
+}
+
+.potala-scroll-row::-webkit-scrollbar-thumb {
+  background: rgb(213 165 79 / 35%);
+  border-radius: 999px;
+}
+
+.featured-products-container {
+  width: min(88vw, 90rem);
+  margin-inline: auto;
+}
+
+@media (max-width: 639px) {
+  .featured-products-container {
+    width: min(calc(100% - 2rem), 90rem);
+  }
+}
+
+.product-heading-ornament {
+  display: inline-block;
+  width: 1.75rem;
+  height: 1px;
+  flex-shrink: 0;
+  background: rgb(213 165 79 / 65%);
+  position: relative;
+}
+
+.product-heading-ornament::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -0.2rem;
+  width: 0.3rem;
+  height: 0.3rem;
+  transform: translateY(-50%) rotate(45deg);
+  background: rgb(213 165 79 / 75%);
+}
+
+.featured-product-card {
+  background: #0b1e38;
+  border: 1px solid rgba(213, 165, 79, 0.22);
+  border-radius: 0.55rem;
+  box-shadow: 0 8px 20px rgba(3, 17, 38, 0.18);
+}
+
+.featured-product-card:hover,
+.featured-product-card:focus-within {
+  border-color: rgba(213, 165, 79, 0.42);
+}
+
+.featured-products-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 82%;
+  gap: 0.875rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-block: 0.15rem;
+}
+
+.featured-products-track::-webkit-scrollbar {
+  display: none;
+}
+
+.featured-products-slide {
+  scroll-snap-align: start;
+  min-width: 0;
+  height: 100%;
+}
+
+@media (min-width: 640px) {
+  .featured-products-track {
+    grid-auto-columns: calc((100% - 1rem) / 2);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .featured-products-track {
+    grid-auto-columns: calc((100% - 2rem) / 3);
+  }
+}
+
+@media (min-width: 1280px) {
+  .featured-products-track {
+    grid-auto-columns: calc((100% - 3.5rem) / 5);
+    gap: 0.875rem;
+  }
+}
+
+.featured-products-nav {
+  position: absolute;
+  top: 42%;
+  z-index: 2;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(213, 165, 79, 0.5);
+  background: rgb(4 17 38 / 72%);
+  color: var(--potala-gold);
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    opacity 180ms ease;
+}
+
+.featured-products-nav:hover:not(:disabled) {
+  background: rgb(4 17 38 / 88%);
+  border-color: var(--potala-gold-light);
+  color: var(--potala-gold-light);
+}
+
+.featured-products-nav:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.featured-products-nav--prev {
+  left: -0.35rem;
+}
+
+.featured-products-nav--next {
+  right: -0.35rem;
+}
+
+@media (min-width: 768px) {
+  .featured-products-nav {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featured-products-track {
+    scroll-behavior: auto;
+  }
+}
+
+.discovery-section {
+  background: #f4ecde;
+  padding-block: 2.75rem;
+}
+
+@media (min-width: 768px) {
+  .discovery-section {
+    padding-block: 3.25rem;
+  }
+}
+
+.discovery-container {
+  position: relative;
+  width: min(92vw, 93.75rem);
+  margin-inline: auto;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.discovery-layout {
+  display: grid;
+  gap: 2.25rem;
+}
+
+@media (min-width: 1180px) {
+  .discovery-layout {
+    grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+    gap: 0;
+    align-items: start;
+  }
+}
+
+.discovery-divider {
+  display: none;
+}
+
+@media (min-width: 1180px) {
+  .discovery-divider {
+    display: block;
+    width: 1px;
+    background: rgb(213 165 79 / 28%);
+    align-self: stretch;
+    margin-inline: clamp(1rem, 2vw, 1.75rem);
+  }
+}
+
+@media (max-width: 1179px) {
+  .discovery-group:not(:first-child) {
+    padding-top: 2.25rem;
+    border-top: 1px solid rgb(213 165 79 / 22%);
+  }
+}
+
+.discovery-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .discovery-group-header {
+    margin-bottom: 1.375rem;
+  }
+}
+
+.discovery-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .discovery-product-grid {
+    gap: 0.875rem;
+  }
+}
+
+@media (min-width: 1180px) {
+  .discovery-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9375rem;
+  }
+}
+
+.discovery-compact-card {
+  min-width: 0;
+}
+
+.discovery-side-control {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: #ebe3d4;
+  color: var(--potala-bg);
+  box-shadow: 0 2px 8px rgb(4 17 38 / 8%);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+@media (min-width: 1180px) {
+  .discovery-side-control {
+    display: inline-flex;
+  }
+
+  .discovery-side-control--left {
+    left: 0;
+  }
+
+  .discovery-side-control--right {
+    right: 0;
+  }
+}
+
+/* —— Filosofia do Instituto Potala —— */
+.philosophy-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--potala-bg);
+  padding-block: 1.75rem;
+}
+
+@media (min-width: 768px) {
+  .philosophy-section {
+    padding-block: 2rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .philosophy-section {
+    min-height: clamp(330px, 18vw, 350px);
+    padding-block: 2rem;
+  }
+}
+
+.philosophy-background,
+.philosophy-buddha-art,
+.philosophy-palace-art,
+.philosophy-overlay {
+  position: absolute;
+  pointer-events: none;
+}
+
+.philosophy-background {
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 55% 80% at 50% 50%, #0a1c36 0%, var(--potala-bg) 72%),
+    var(--potala-bg);
+}
+
+.philosophy-buddha-art {
+  inset-block: 0;
+  left: 0;
+  z-index: 1;
+  width: clamp(240px, 16.5vw, 315px);
+  background-image: url("/images/potala/philosophy-buddha-final.png");
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: auto 118%;
+  opacity: 0.34;
+  filter: brightness(0.98) contrast(1.04) saturate(0.72);
+}
+
+.philosophy-palace-art {
+  inset-block: 0;
+  right: 0;
+  z-index: 1;
+  width: clamp(420px, 28vw, 550px);
+  background-image: url("/images/potala/philosophy-palace-final.png");
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: contain;
+  opacity: 0.36;
+  filter: brightness(0.88) contrast(1.06) saturate(0.82);
+}
+
+.philosophy-overlay {
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(4 19 39 / 34%) 18%,
+    rgb(4 19 39 / 72%) 31%,
+    rgb(4 19 39 / 70%) 73%,
+    rgb(4 19 39 / 24%) 88%,
+    transparent 100%
+  );
+}
+
+.philosophy-container {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 2rem;
+  width: min(90vw, 90rem);
+  margin-inline: auto;
+  align-items: center;
+}
+
+@media (min-width: 1100px) {
+  .philosophy-container {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    gap: clamp(3rem, 4.5vw, 4.5rem);
+  }
+}
+
+.philosophy-copy {
+  max-width: 28rem;
+}
+
+.philosophy-eyebrow {
+  margin: 0 0 0.65rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--potala-gold);
+}
+
+.philosophy-title {
+  margin: 0;
+  max-width: 27rem;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: clamp(1.55rem, 2.1vw, 1.95rem);
+  font-weight: 500;
+  line-height: 1.16;
+  color: var(--potala-text);
+}
+
+.philosophy-text {
+  margin: 0.9rem 0 0;
+  max-width: 24.5rem;
+  font-size: clamp(0.8125rem, 1.05vw, 0.9rem);
+  line-height: 1.58;
+  color: rgb(245 241 232 / 78%);
+}
+
+.philosophy-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+  min-height: 2.5rem;
+  padding: 0.55rem 1.15rem;
+  border: 1px solid rgb(213 165 79 / 55%);
+  border-radius: var(--potala-radius-button);
+  background: transparent;
+  color: var(--potala-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.philosophy-cta:hover {
+  border-color: var(--potala-gold-light);
+  color: var(--potala-gold-light);
+  background: rgb(213 165 79 / 8%);
+}
+
+.philosophy-principles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 480px) {
+  .philosophy-principles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.35rem 1.25rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1099px) {
+  .philosophy-principles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem 1.5rem;
+  }
+
+  .philosophy-buddha-art {
+    width: clamp(180px, 20vw, 250px);
+    background-size: auto 105%;
+    opacity: 0.24;
+  }
+
+  .philosophy-palace-art {
+    width: clamp(270px, 31vw, 390px);
+    background-size: contain;
+    opacity: 0.25;
+  }
+}
+
+@media (min-width: 1100px) {
+  .philosophy-principles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(1.35rem, 2vw, 2.1rem);
+    align-items: start;
+  }
+}
+
+.philosophy-principle {
+  min-width: 0;
+  text-align: center;
+}
+
+.philosophy-principle-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.7rem;
+  color: var(--potala-gold);
+}
+
+.philosophy-principle-icon svg {
+  width: 3rem;
+  height: 3rem;
+}
+
+@media (min-width: 1100px) {
+  .philosophy-principle-icon svg {
+    width: 3.8rem;
+    height: 3.8rem;
+  }
+}
+
+.philosophy-principle-title {
+  margin: 0;
+  margin-inline: auto;
+  max-width: 8.5rem;
+  min-height: 2.5rem;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--potala-text);
+}
+
+.philosophy-principle-desc {
+  margin: 0.4rem auto 0;
+  max-width: 11.5rem;
+  font-size: clamp(0.6875rem, 0.9vw, 0.75rem);
+  line-height: 1.42;
+  color: rgb(245 241 232 / 70%);
+}
+
+@media (max-width: 767px) {
+  .philosophy-section {
+    min-height: 0;
+  }
+
+  .philosophy-buddha-art {
+    width: clamp(145px, 42vw, 200px);
+    background-size: contain;
+    background-position: left top;
+    opacity: 0.17;
+    filter: brightness(0.98) contrast(1.04) saturate(0.72);
+  }
+
+  .philosophy-palace-art {
+    width: clamp(170px, 48vw, 240px);
+    background-size: contain;
+    background-position: right bottom;
+    opacity: 0.12;
+    filter: brightness(0.88) contrast(1.06) saturate(0.82);
+  }
+
+  .philosophy-overlay {
+    background: linear-gradient(
+      180deg,
+      rgb(4 19 39 / 68%) 0%,
+      rgb(4 19 39 / 88%) 38%,
+      rgb(4 19 39 / 92%) 100%
+    );
+  }
+
+  .philosophy-copy {
+    max-width: none;
+  }
+
+  .philosophy-title {
+    max-width: none;
+  }
+
+  .philosophy-principle-icon svg {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .philosophy-principles {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .philosophy-principle-desc {
+    max-width: 16rem;
+  }
 }

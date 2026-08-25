@@ -1,0 +1,44 @@
+import { getFeaturedProducts } from "@/data/marketplace";
+import { FeaturedProductsCarousel } from "@/components/storefront/FeaturedProductsCarousel";
+import { ArrowRightIcon } from "@/components/storefront/icons";
+
+export function FeaturedProducts() {
+  const products = getFeaturedProducts();
+
+  return (
+    <section
+      id="produtos"
+      aria-labelledby="featured-products-heading"
+      className="bg-potala-bg py-9 md:py-11"
+    >
+      <div className="featured-products-container">
+        <div className="mb-6 flex items-center justify-between gap-4 md:mb-7">
+          <div className="flex min-w-0 items-center gap-3">
+            <h2
+              id="featured-products-heading"
+              className="font-serif text-[1.625rem] font-semibold leading-none text-potala-cream md:text-[1.8rem]"
+            >
+              Produtos em destaque
+            </h2>
+            <span aria-hidden="true" className="product-heading-ornament" />
+          </div>
+
+          <a
+            href="#produtos"
+            className="inline-flex shrink-0 items-center gap-2.5 text-sm text-potala-cream/90 transition hover:text-potala-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold-light"
+          >
+            Ver todos
+            <span
+              aria-hidden="true"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-potala-gold/45 text-potala-gold"
+            >
+              <ArrowRightIcon className="h-3.5 w-3.5" />
+            </span>
+          </a>
+        </div>
+
+        <FeaturedProductsCarousel products={products} />
+      </div>
+    </section>
+  );
+}
