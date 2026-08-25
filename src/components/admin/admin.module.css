@@ -1,4 +1,4 @@
-:root {
+.shell {
   --admin-bg: #061426;
   --admin-sidebar: #041020;
   --admin-surface: #0b1d33;
@@ -10,9 +10,6 @@
   --admin-success: #65b96e;
   --admin-warning: #d6a746;
   --admin-danger: #c95c57;
-}
-
-.shell {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
   min-height: 100dvh;
@@ -116,7 +113,8 @@
 
 .navItem,
 .navItemActive,
-.navItemSoon {
+.navItemSoon,
+.navLink {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -130,21 +128,164 @@
   background: transparent;
   color: var(--admin-muted);
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
+.navLink:hover,
 .navItem:hover,
 .navItemSoon:hover {
   background: rgba(255, 255, 255, 0.04);
   color: var(--admin-text);
 }
 
-.navItemActive {
+.navItemActive,
+.navLinkActive {
   background: rgba(213, 166, 79, 0.12);
   border-color: var(--admin-border);
   color: var(--admin-gold);
   font-weight: 600;
   cursor: default;
+}
+
+.navLinkActive {
+  cursor: pointer;
+}
+
+.navGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.navSubLink {
+  display: block;
+  padding: 8px 12px 8px 22px;
+  border-radius: 8px;
+  color: var(--admin-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+.navSubLink:hover,
+.navSubLinkActive {
+  color: var(--admin-gold);
+  background: rgba(213, 166, 79, 0.08);
+}
+
+.sidebarClose {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin-left: auto;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-elevated);
+  color: var(--admin-text);
+  cursor: pointer;
+}
+
+.searchPalette {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.55);
+  display: grid;
+  place-items: start center;
+  padding: 10vh 16px 16px;
+}
+
+.searchDialog {
+  width: min(640px, 100%);
+  background: var(--admin-elevated);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.searchDialogInput {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-bottom: 1px solid var(--admin-border);
+  background: transparent;
+  color: var(--admin-text);
+  padding: 0 16px;
+  font-size: 1rem;
+}
+
+.searchDialogInput:focus {
+  outline: none;
+}
+
+.searchGroup {
+  padding: 10px 12px;
+}
+
+.searchGroupTitle {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--admin-muted);
+}
+
+.searchResult {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--admin-text);
+  padding: 10px;
+  cursor: pointer;
+}
+
+.searchResultActive,
+.searchResult:hover {
+  background: rgba(213, 166, 79, 0.12);
+}
+
+.searchResultMeta {
+  font-size: 0.75rem;
+  color: var(--admin-muted);
+}
+
+.searchEmpty {
+  padding: 24px;
+  text-align: center;
+  color: var(--admin-muted);
+}
+
+.metricsGrid6 {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 1439px) {
+  .metricsGrid6 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1023px) {
+  .metricsGrid6 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .metricsGrid6 {
+    grid-template-columns: 1fr;
+  }
 }
 
 .soonHint {
@@ -424,7 +565,7 @@
 
 .chartsRow {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.9fr);
   gap: 12px;
 }
 
@@ -618,7 +759,7 @@
 
 .bottomRow {
   display: grid;
-  grid-template-columns: 1.1fr 0.95fr 0.95fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -807,19 +948,13 @@
   text-align: center;
 }
 
-@media (max-width: 1100px) {
-  .chartsRow,
-  .tablesRow,
+@media (max-width: 1439px) {
   .bottomRow {
-    grid-template-columns: 1fr;
-  }
-
-  .metricsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .summaryStrip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .chartsRow {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -839,6 +974,14 @@
 
   .sidebarOpen {
     transform: translateX(0);
+  }
+
+  .sidebarClose {
+    display: inline-flex;
+  }
+
+  .logoWrap {
+    padding-right: 0;
   }
 
   .overlay {

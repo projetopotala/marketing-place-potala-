@@ -1,17 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { ADMIN_NAV_ITEMS } from "@/data/admin";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { BRAND } from "@/data/marketplace";
 import { useAuth } from "@/context/AuthContext";
+import { ADMIN_NAV } from "@/data/admin";
 import styles from "./admin.module.css";
 
 interface AdminSidebarProps {
   open: boolean;
+  onClose: () => void;
 }
 
-export function AdminSidebar({ open }: AdminSidebarProps) {
+export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
+  const pathname = usePathname();
   const router = useRouter();
   const { signOut } = useAuth();
 
@@ -20,8 +23,14 @@ export function AdminSidebar({ open }: AdminSidebarProps) {
     router.push("/acesso");
   }
 
+  function isActive(href: string): boolean {
+    if (href === "/admin") return pathname === "/admin";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
+
   return (
     <aside
+      id="admin-sidebar"
       className={`${styles.sidebar} ${open ? styles.sidebarOpen : ""}`}
       aria-label="Navegação administrativa"
     >
@@ -39,35 +48,46 @@ export function AdminSidebar({ open }: AdminSidebarProps) {
           <span className={styles.logoName}>Potala</span>
           <span className={styles.logoMarket}>Admin</span>
         </div>
+        <button
+          type="button"
+          className={styles.sidebarClose}
+          aria-label="Fechar menu"
+          onClick={onClose}
+        >
+          ✕
+        </button>
       </div>
 
       <nav className={styles.nav} aria-label="Menu do painel">
-        {ADMIN_NAV_ITEMS.map((item) => {
-          if (item.active && item.available) {
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={styles.navItemActive}
-                aria-current="page"
+        {ADMIN_NAV.map((item) => {
+          const active = isActive(item.href);
+          return (
+            <div key={item.id} className={styles.navGroup}>
+              <Link
+                href={item.href}
+                className={`${styles.navLink} ${active ? styles.navLinkActive : ""}`}
+                aria-current={active && !item.children ? "page" : undefined}
+                onClick={onClose}
               >
                 {item.label}
-              </button>
-            );
-          }
-
-          return (
-            <button
-              key={item.id}
-              type="button"
-              className={styles.navItemSoon}
-              aria-disabled="true"
-              title="Disponível em breve"
-              onClick={(event) => event.preventDefault()}
-            >
-              <span>{item.label}</span>
-              <span className={styles.soonHint}>Disponível em breve</span>
-            </button>
+              </Link>
+              {item.children?.map((child) => {
+                const childActive = isActive(child.href);
+                return (
+                  <Link
+                    key={child.id}
+                    href={child.href}
+                    className={`${styles.navSubLink} ${
+                      childActive ? styles.navSubLinkActive : ""
+                    }`}
+                    aria-current={childActive ? "page" : undefined}
+                    onClick={onClose}
+                  >
+                    {child.label}
+                  </Link>
+                );
+              })}
+            </div>
           );
         })}
       </nav>

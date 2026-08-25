@@ -1,0 +1,163 @@
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.tab,
+.tabActive {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface);
+  color: var(--admin-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabActive {
+  background: rgba(213, 166, 79, 0.14);
+  color: var(--admin-gold);
+  border-color: rgba(213, 166, 79, 0.35);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timelineItem {
+  border-left: 2px solid rgba(213, 166, 79, 0.35);
+  padding-left: 12px;
+}
+
+.timelineAt {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--admin-muted);
+}
+
+.timelineLabel {
+  margin: 2px 0 0;
+  font-size: 0.86rem;
+  color: var(--admin-text);
+  font-weight: 600;
+}
+
+.timelineDetail {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--admin-muted);
+}
+
+.kvGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+}
+
+.kvLabel {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--admin-muted);
+}
+
+.kvValue {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: var(--admin-text);
+  word-break: break-word;
+}
+
+.tree {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.treeNode {
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--admin-elevated);
+}
+
+.treeChild {
+  margin-left: 18px;
+  margin-top: 8px;
+}
+
+.chartBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  min-height: 160px;
+  padding: 8px 4px 0;
+}
+
+.chartBarCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.chartBar {
+  width: 100%;
+  max-width: 36px;
+  border-radius: 4px 4px 0 0;
+  background: rgba(110, 168, 216, 0.78);
+  min-height: 4px;
+}
+
+.chartBarLabel {
+  font-size: 0.68rem;
+  color: var(--admin-muted);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.muted {
+  color: var(--admin-muted);
+  font-size: 0.84rem;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
+  background: var(--admin-surface);
+}
+
+@media (max-width: 767px) {
+  .kvGrid {
+    grid-template-columns: 1fr;
+  }
+}
