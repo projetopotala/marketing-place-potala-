@@ -1,0 +1,47 @@
+.page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 20%, rgb(213 165 79 / 10%), transparent 28%),
+    radial-gradient(circle at 88% 75%, rgb(213 165 79 / 8%), transparent 26%),
+    var(--potala-bg-secondary);
+  padding-block: 1.5rem 3rem;
+}
+
+.container {
+  width: min(92vw, 40rem);
+  margin-inline: auto;
+  display: grid;
+  gap: 1.15rem;
+}
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  color: var(--potala-text-muted);
+}
+
+.breadcrumb li:not(:last-child)::after {
+  content: "/";
+  margin-left: 0.55rem;
+  color: rgb(213 165 79 / 45%);
+}
+
+.breadcrumb a {
+  color: var(--potala-gold);
+}
+
+.breadcrumb [aria-current="page"] {
+  color: var(--potala-cream);
+}
+
+.loading {
+  margin: 0;
+  color: var(--potala-text-muted);
+}

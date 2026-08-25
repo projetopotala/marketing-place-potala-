@@ -1,0 +1,136 @@
+.page {
+  background: var(--potala-bg-secondary);
+  padding-block: 1.25rem 2.5rem;
+}
+
+.container {
+  width: min(92vw, 90rem);
+  margin-inline: auto;
+  display: grid;
+  gap: 2rem;
+}
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  color: var(--potala-text-muted);
+}
+
+.breadcrumb li:not(:last-child)::after {
+  content: "/";
+  margin-left: 0.55rem;
+  color: rgb(213 165 79 / 45%);
+}
+
+.breadcrumb a {
+  color: var(--potala-gold);
+}
+
+.breadcrumb a:hover {
+  color: var(--potala-gold-light);
+}
+
+.breadcrumb [aria-current="page"] {
+  color: var(--potala-cream);
+}
+
+.topGrid {
+  display: grid;
+  gap: 1.35rem;
+  align-items: start;
+}
+
+.galleryCol,
+.infoCol,
+.panelCol {
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .topGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 1.5rem;
+  }
+
+  .panelCol {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1200px) {
+  .topGrid {
+    grid-template-columns:
+      minmax(0, 0.95fr)
+      minmax(0, 1.1fr)
+      minmax(280px, 0.72fr);
+    gap: 1.75rem;
+  }
+
+  .panelCol {
+    grid-column: auto;
+  }
+}
+
+.details {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 56rem;
+}
+
+.block {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.blockTitle {
+  margin: 0;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--potala-cream);
+}
+
+.copy {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: rgb(245 241 232 / 82%);
+}
+
+.specs {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.specRow {
+  display: grid;
+  grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--potala-border);
+  font-size: 0.85rem;
+}
+
+.specRow dt {
+  color: var(--potala-gold);
+  font-weight: 600;
+}
+
+.specRow dd {
+  margin: 0;
+  color: var(--potala-text);
+}
+
+.bullets {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: rgb(245 241 232 / 80%);
+}

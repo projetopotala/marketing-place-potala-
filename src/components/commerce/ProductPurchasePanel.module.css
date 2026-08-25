@@ -1,0 +1,264 @@
+.panel {
+  display: grid;
+  gap: 0.85rem;
+  min-width: 0;
+  padding: 1.15rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.75rem;
+  background: var(--potala-panel);
+}
+
+.price {
+  margin: 0;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: clamp(1.6rem, 2vw, 1.9rem);
+  font-weight: 600;
+  color: var(--potala-gold-light);
+}
+
+.discountRow {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.original {
+  font-size: 0.85rem;
+  color: var(--potala-text-muted);
+  text-decoration: line-through;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.4rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.3rem;
+  background: var(--potala-gold);
+  color: var(--potala-bg);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.stock {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--potala-cream);
+}
+
+.seller {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--potala-text-muted);
+}
+
+.seller strong {
+  color: var(--potala-text);
+  font-weight: 600;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--potala-gold);
+}
+
+.quantityControls {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.4rem;
+  overflow: hidden;
+}
+
+.qtyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--potala-text);
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+
+.qtyBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.qtyBtn:focus-visible {
+  outline: 2px solid var(--potala-gold-light);
+  outline-offset: -2px;
+}
+
+.qtyInput {
+  width: 3rem;
+  height: 2.75rem;
+  border: 0;
+  border-inline: 1px solid var(--potala-border);
+  background: transparent;
+  color: var(--potala-text);
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.actions {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.addCart,
+.buyNow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.85rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.addCart {
+  border: 1px solid var(--potala-gold);
+  background: transparent;
+  color: var(--potala-gold);
+  cursor: pointer;
+}
+
+.addCart:hover:not(:disabled) {
+  background: rgb(213 165 79 / 10%);
+}
+
+.addCart:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.buyNow {
+  border: 0;
+  width: 100%;
+  background: linear-gradient(180deg, var(--potala-gold-light), var(--potala-gold));
+  color: var(--potala-bg);
+  cursor: pointer;
+}
+
+.buyNow:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.buyNow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.addCart:focus-visible,
+.buyNow:focus-visible {
+  outline: 2px solid var(--potala-gold-light);
+  outline-offset: 2px;
+}
+
+.feedback {
+  margin: 0;
+  min-height: 1.2rem;
+  font-size: 0.75rem;
+  color: var(--potala-gold-light);
+}
+
+.shipping {
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--potala-border);
+}
+
+.cepRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cepInput {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.375rem;
+  background: var(--potala-bg);
+  color: var(--potala-text);
+  font-size: 0.875rem;
+}
+
+.cepBtn {
+  flex: 0 0 auto;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--potala-border-strong);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--potala-gold);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.help {
+  margin: 0.45rem 0 0;
+  font-size: 0.7rem;
+  color: var(--potala-text-muted);
+}
+
+.summaryList {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.summaryList li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--potala-text-muted);
+}
+
+.summaryList svg {
+  color: var(--potala-gold);
+  flex-shrink: 0;
+}
+
+.payment {
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--potala-border);
+}
+
+.subheading {
+  margin: 0 0 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--potala-text);
+}
+
+.payment ul {
+  margin: 0;
+  padding-left: 1rem;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: var(--potala-text-muted);
+}
+
+@media (min-width: 1200px) {
+  .panel {
+    position: sticky;
+    top: 7.5rem;
+  }
+}

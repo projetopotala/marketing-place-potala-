@@ -1,0 +1,63 @@
+.section {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--potala-cream);
+}
+
+.empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--potala-text-muted);
+}
+
+.list {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.65rem;
+  background: var(--potala-panel);
+}
+
+.itemHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.date {
+  font-size: 0.75rem;
+  color: var(--potala-text-muted);
+}
+
+.stars {
+  display: flex;
+  gap: 0.15rem;
+  margin-bottom: 0.45rem;
+  color: var(--potala-gold);
+}
+
+.comment {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: rgb(245 241 232 / 82%);
+}

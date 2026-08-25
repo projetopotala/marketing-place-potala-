@@ -1,0 +1,56 @@
+.panel {
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.75rem;
+  background:
+    radial-gradient(circle at top right, rgb(213 165 79 / 12%), transparent 42%),
+    var(--potala-panel);
+}
+
+.title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
+  color: var(--potala-cream);
+}
+
+.text {
+  margin: 0;
+  max-width: 44rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--potala-text-muted);
+}
+
+.stats {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.stats > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.stats dt {
+  font-size: 0.75rem;
+  color: var(--potala-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stats dd {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--potala-cream);
+}
+
+@media (min-width: 768px) {
+  .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

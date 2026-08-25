@@ -1,0 +1,74 @@
+.info {
+  display: grid;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.category {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--potala-gold);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: clamp(1.55rem, 2.4vw, 2.15rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--potala-cream);
+}
+
+.rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--potala-gold);
+}
+
+.ratingMeta {
+  margin-left: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--potala-text-muted);
+}
+
+.sku {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--potala-text-muted);
+}
+
+.lead {
+  margin: 0;
+  max-width: 38rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgb(245 241 232 / 82%);
+}
+
+.priceMobile {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--potala-gold-light);
+}
+
+.original {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--potala-text-muted);
+  text-decoration: line-through;
+}
+
+@media (min-width: 1200px) {
+  .priceMobile {
+    display: none;
+  }
+}
