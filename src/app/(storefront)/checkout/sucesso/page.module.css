@@ -1,0 +1,201 @@
+.page {
+  background: var(--potala-bg-secondary);
+  padding-block: 1.5rem 2.75rem;
+}
+
+.container {
+  width: min(92vw, 48rem);
+  margin-inline: auto;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hero {
+  display: grid;
+  gap: 0.65rem;
+  justify-items: center;
+  text-align: center;
+  padding: 1.5rem 1.25rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.75rem;
+  background: var(--potala-panel);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 999px;
+  background: rgb(213 165 79 / 16%);
+  border: 1px solid var(--potala-gold);
+  color: var(--potala-gold-light);
+  font-size: 1.4rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
+  color: var(--potala-cream);
+}
+
+.code {
+  margin: 0;
+  color: var(--potala-gold-light);
+  font-size: 0.95rem;
+}
+
+.text {
+  margin: 0;
+  max-width: 36rem;
+  color: var(--potala-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.card,
+.pix,
+.next {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1.15rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.75rem;
+  background: var(--potala-panel);
+}
+
+.card h2,
+.pix h2,
+.next h2 {
+  margin: 0;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: 1.2rem;
+  color: var(--potala-gold-light);
+}
+
+.card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.card li,
+.card dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.88rem;
+  color: var(--potala-text-muted);
+}
+
+.card dl {
+  margin: 0;
+  display: grid;
+  gap: 0.4rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--potala-border);
+}
+
+.card dd {
+  margin: 0;
+  color: var(--potala-cream);
+  font-weight: 600;
+}
+
+.total dt,
+.total dd {
+  color: var(--potala-gold-light);
+  font-size: 1rem;
+}
+
+.qr {
+  width: 10rem;
+  height: 10rem;
+  margin-inline: auto;
+  border-radius: 0.5rem;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      #041126 0 8px,
+      #d5a54f 8px 10px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      #041126 0 8px,
+      #d5a54f 8px 10px
+    );
+  opacity: 0.85;
+}
+
+.pixCode {
+  margin: 0;
+  word-break: break-all;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--potala-text-muted);
+}
+
+.copyStatus {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--potala-gold-light);
+}
+
+.actions {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.85rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.primaryBtn {
+  background: linear-gradient(180deg, var(--potala-gold-light), var(--potala-gold));
+  color: var(--potala-bg);
+}
+
+.secondaryBtn {
+  border: 1px solid var(--potala-border);
+  background: transparent;
+  color: var(--potala-gold);
+  cursor: pointer;
+}
+
+.secondaryBtn:focus-visible,
+.primaryBtn:focus-visible {
+  outline: 2px solid var(--potala-gold-light);
+  outline-offset: 2px;
+}
+
+.disabledLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.85rem;
+  padding: 0.7rem 1rem;
+  border: 1px dashed var(--potala-border);
+  border-radius: 0.375rem;
+  color: var(--potala-text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.next p {
+  margin: 0;
+  color: var(--potala-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}

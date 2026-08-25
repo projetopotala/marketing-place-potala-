@@ -213,3 +213,67 @@ export function CommunityPillarIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function ContentExclusiveIcon(props: IconProps) {
+  return (
+    <svg {...baseProps({ width: 22, height: 22, ...props })}>
+      <path d="M7 5.5h10a1.5 1.5 0 0 1 1.5 1.5v10a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 17V7A1.5 1.5 0 0 1 7 5.5Z" />
+      <path d="M9 9.5h6M9 12.5h6M9 15.5h3.5" />
+    </svg>
+  );
+}
+
+export function SpecialOfferIcon(props: IconProps) {
+  return (
+    <svg {...baseProps({ width: 22, height: 22, ...props })}>
+      <path d="M12 4.5 13.8 9l4.7.5-3.5 3.2.9 4.6L12 15.2 7.1 17.3l.9-4.6-3.5-3.2 4.7-.5L12 4.5Z" />
+    </svg>
+  );
+}
+
+export function FirstLaunchIcon(props: IconProps) {
+  return (
+    <svg {...baseProps({ width: 22, height: 22, ...props })}>
+      <path d="M12 4v7.5" />
+      <path d="m8.5 8 3.5-3.5L15.5 8" />
+      <path d="M7 13.5h10" />
+      <path d="M6 17h12" />
+    </svg>
+  );
+}
+
+export function PrivacyShieldIcon(props: IconProps) {
+  return (
+    <svg {...baseProps({ width: 16, height: 16, ...props })}>
+      <path d="M12 3.5 5.5 5.8v5c0 3.2 2.5 5.5 6.5 7 4-1.5 6.5-3.8 6.5-7v-5L12 3.5Z" />
+      <path d="m9.2 11.2 1.8 1.8 3.6-3.7" />
+    </svg>
+  );
+}
+
+export function WhatsAppIcon(props: IconProps) {
+  return (
+    <svg {...baseProps({ width: 18, height: 18, ...props })}>
+      <path d="M5.8 18.5 7.2 14.8A7 7 0 1 1 13 19.2a6.9 6.9 0 0 1-3.3-.9l-3.9 1.2Z" />
+      <path d="M9.1 9.2c.2-.5.5-.5.8-.5h.3c.3 0 .5.1.6.4l.6 1.5c.1.2 0 .4-.2.5l-.3.4c-.1.1-.1.3 0 .5.5.7 1.1 1.3 1.8 1.7.2.1.4.1.5 0l.4-.4c.1-.1.3-.2.5-.1l1.5.6c.3.1.4.3.4.6v.3c0 .3-.1.5-.5.8-.4.3-1.1.5-1.8.3A5.8 5.8 0 0 1 8.8 10c0-.6.1-1.2.3-.8Z" />
+    </svg>
+  );
+}
+
+export function MailIcon(props: IconProps) {
+  return (
+    <svg {...baseProps({ width: 18, height: 18, ...props })}>
+      <rect x="3.5" y="6" width="17" height="12" rx="1.5" />
+      <path d="m5 8.5 7.5 5.2L20 8.5" />
+    </svg>
+  );
+}
+
+export function ClockIcon(props: IconProps) {
+  return (
+    <svg {...baseProps({ width: 18, height: 18, ...props })}>
+      <circle cx="12" cy="12" r="7.5" />
+      <path d="M12 8.5V12l2.5 2" />
+    </svg>
+  );
+}

@@ -1,9 +1,21 @@
 "use client";
 
-import Image from "next/image";
 import { useId, useState, type FormEvent } from "react";
+import {
+  ArrowRightIcon,
+  ContentExclusiveIcon,
+  FirstLaunchIcon,
+  PrivacyShieldIcon,
+  SpecialOfferIcon,
+} from "@/components/storefront/icons";
 
 type Status = "idle" | "success" | "error";
+
+const BENEFITS = [
+  { id: "conteudos", label: "Conteúdos exclusivos", Icon: ContentExclusiveIcon },
+  { id: "ofertas", label: "Ofertas especiais", Icon: SpecialOfferIcon },
+  { id: "lancamentos", label: "Lançamentos em primeira mão", Icon: FirstLaunchIcon },
+] as const;
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -27,37 +39,35 @@ export function NewsletterSection() {
     setEmail("");
   }
 
+  const statusMessage =
+    status === "error"
+      ? "Informe um e-mail válido para continuar."
+      : status === "success"
+        ? "Inscrição registrada localmente. Em breve você receberá novidades."
+        : "Ao se inscrever, você concorda em receber nossos e-mails. Você pode cancelar a qualquer momento.";
+
   return (
     <section
       id="newsletter"
       aria-labelledby="newsletter-title"
-      className="border-y border-potala-border bg-potala-bg-secondary py-14 md:py-16"
+      className="newsletter-section"
     >
-      <div className="potala-container grid items-center gap-8 lg:grid-cols-[180px_minmax(0,1fr)_auto]">
-        <div className="relative mx-auto h-36 w-36 overflow-hidden rounded-full border border-potala-border lg:mx-0">
-          <Image
-            src="/images/potala/newsletter-candle.jpg"
-            alt="Placeholder temporário: vela acesa em base inspirada em flor de lótus"
-            fill
-            className="object-cover"
-            sizes="144px"
-          />
-        </div>
+      <div aria-hidden="true" className="newsletter-section__overlay" />
 
-        <div>
-          <h2
-            id="newsletter-title"
-            className="font-serif text-3xl leading-tight text-potala-text md:text-4xl"
-          >
+      <div className="newsletter-section__container">
+        <div aria-hidden="true" className="newsletter-section__visual-space" />
+
+        <div className="newsletter-section__content">
+          <h2 id="newsletter-title" className="newsletter-section__title">
             Receba inspiração, novidades e ofertas exclusivas
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-potala-muted md:text-base">
-            Inscreva-se para conteúdos selecionados, lançamentos e convites
-            especiais do Instituto Potala.
+          <p className="newsletter-section__description">
+            Junte-se à nossa comunidade e receba conteúdos especiais para nutrir
+            sua jornada espiritual.
           </p>
 
           <form
-            className="mt-6 flex flex-col gap-3 sm:flex-row"
+            className="newsletter-section__form"
             onSubmit={handleSubmit}
             noValidate
           >
@@ -76,13 +86,14 @@ export function NewsletterSection() {
                 }
               }}
               placeholder="Seu melhor e-mail"
-              className="potala-input sm:max-w-md"
+              className="newsletter-section__input"
               aria-invalid={status === "error"}
               aria-describedby={statusId}
               autoComplete="email"
             />
-            <button type="submit" className="potala-btn potala-btn-primary shrink-0">
+            <button type="submit" className="newsletter-section__submit">
               Quero me inscrever
+              <ArrowRightIcon className="h-4 w-4" />
             </button>
           </form>
 
@@ -90,34 +101,28 @@ export function NewsletterSection() {
             id={statusId}
             role="status"
             aria-live="polite"
-            className={`mt-3 min-h-5 text-sm ${
+            className={`newsletter-section__consent ${
               status === "error"
-                ? "text-red-300"
+                ? "newsletter-section__consent--error"
                 : status === "success"
-                  ? "text-potala-gold-light"
-                  : "text-transparent"
+                  ? "newsletter-section__consent--success"
+                  : ""
             }`}
           >
-            {status === "error"
-              ? "Informe um e-mail válido para continuar."
-              : status === "success"
-                ? "Inscrição registrada localmente. Em breve você receberá novidades."
-                : "."}
+            {status === "idle" ? (
+              <PrivacyShieldIcon className="newsletter-section__consent-icon" />
+            ) : null}
+            <span>{statusMessage}</span>
           </p>
         </div>
 
-        <ul className="grid gap-3 text-sm text-potala-muted sm:grid-cols-3 lg:grid-cols-1">
-          {[
-            "Conteúdos exclusivos",
-            "Ofertas especiais",
-            "Lançamentos em primeira mão",
-          ].map((item) => (
-            <li key={item} className="flex items-center gap-2">
-              <span
-                aria-hidden="true"
-                className="inline-block h-1.5 w-1.5 rotate-45 bg-potala-gold"
-              />
-              {item}
+        <ul className="newsletter-section__benefits">
+          {BENEFITS.map(({ id, label, Icon }) => (
+            <li key={id} className="newsletter-section__benefit">
+              <span className="newsletter-section__benefit-icon" aria-hidden="true">
+                <Icon />
+              </span>
+              <span className="newsletter-section__benefit-label">{label}</span>
             </li>
           ))}
         </ul>

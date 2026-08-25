@@ -1,21 +1,25 @@
 "use client";
 
+import Link from "next/link";
 import { useId, useState } from "react";
 import { BrandLogo } from "@/components/storefront/BrandLogo";
 import { CategoryNavigation } from "@/components/storefront/CategoryNavigation";
+import { AccountHeaderLink } from "@/components/account/AccountHeaderLink";
+import { useCart } from "@/context/CartContext";
 import {
   CartIcon,
   CloseIcon,
   MenuIcon,
   SearchIcon,
-  UserIcon,
 } from "@/components/storefront/icons";
 
 export function MarketplaceHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const { totalItems, isReady } = useCart();
   const searchId = useId();
   const menuId = "mobile-category-menu";
+  const cartCount = isReady ? totalItems : 0;
 
   return (
     <header
@@ -23,41 +27,37 @@ export function MarketplaceHeader() {
       className="sticky top-0 z-40 border-b border-potala-border bg-potala-bg/95 backdrop-blur"
     >
       <div className="potala-wide-container grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 py-4 md:grid-cols-[minmax(220px,285px)_minmax(0,1fr)_auto] md:gap-x-8 md:py-5 lg:min-h-[106px]">
-        <a href="#topo" className="min-w-0 justify-self-start">
+        <Link href="/" className="min-w-0 justify-self-start">
           <BrandLogo />
-        </a>
+        </Link>
 
         <div className="flex items-center gap-2 justify-self-end md:col-start-3 md:gap-0">
-          <button
-            type="button"
-            className="inline-flex items-center gap-3 px-1 py-1 text-left text-potala-text transition hover:text-potala-gold md:px-2"
-            aria-label="Entrar ou acessar minha conta"
-          >
-            <UserIcon className="h-7 w-7 text-potala-gold" />
-            <span className="hidden leading-tight md:block">
-              <span className="block text-sm font-medium">Entrar</span>
-              <span className="block text-xs text-potala-muted">Minha conta</span>
-            </span>
-          </button>
+          <AccountHeaderLink />
 
           <span
             aria-hidden="true"
             className="mx-3 hidden h-9 w-px bg-potala-border md:block"
           />
 
-          <button
-            type="button"
+          <Link
+            href="/carrinho"
             className="relative inline-flex items-center gap-2.5 px-1 py-1 text-potala-text transition hover:text-potala-gold md:px-2"
-            aria-label="Carrinho com 2 itens"
+            aria-label={
+              cartCount === 0
+                ? "Carrinho vazio"
+                : `Carrinho com ${cartCount} ${cartCount === 1 ? "item" : "itens"}`
+            }
           >
             <span className="relative">
               <CartIcon className="h-7 w-7 text-potala-gold" />
-              <span className="absolute -right-2 -top-2 inline-flex h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-potala-gold px-1 text-[0.65rem] font-semibold leading-none text-potala-bg">
-                2
-              </span>
+              {cartCount > 0 ? (
+                <span className="absolute -right-2 -top-2 inline-flex h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-potala-gold px-1 text-[0.65rem] font-semibold leading-none text-potala-bg">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              ) : null}
             </span>
             <span className="hidden text-sm font-medium lg:inline">Carrinho</span>
-          </button>
+          </Link>
 
           <button
             type="button"

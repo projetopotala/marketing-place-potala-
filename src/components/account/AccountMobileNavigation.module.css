@@ -1,0 +1,30 @@
+.wrap {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.trigger {
+  min-height: 2.85rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.375rem;
+  background: var(--potala-panel);
+  color: var(--potala-gold);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--potala-gold-light);
+  outline-offset: 2px;
+}
+
+.panel {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .wrap {
+    display: none;
+  }
+}

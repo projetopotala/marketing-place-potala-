@@ -1,0 +1,28 @@
+.card {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.65rem;
+  background: var(--potala-panel);
+}
+
+.label {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--potala-gold);
+}
+
+.value {
+  margin: 0;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: 1.55rem;
+  color: var(--potala-cream);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--potala-text-muted);
+}

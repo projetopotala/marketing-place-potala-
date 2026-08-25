@@ -1,0 +1,142 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import {
+  getProductBySlug,
+  getProductImages,
+  getRelatedProducts,
+  PRODUCTS,
+} from "@/data/marketplace";
+import { ProductGallery } from "@/components/commerce/ProductGallery";
+import { ProductInformation } from "@/components/commerce/ProductInformation";
+import { ProductPurchasePanel } from "@/components/commerce/ProductPurchasePanel";
+import { ProductReviews } from "@/components/commerce/ProductReviews";
+import { RelatedProducts } from "@/components/commerce/RelatedProducts";
+import styles from "./page.module.css";
+
+export function generateStaticParams() {
+  return PRODUCTS.map((product) => ({ slug: product.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const product = getProductBySlug(slug);
+
+  if (!product) {
+    return { title: "Produto não encontrado | Instituto Potala Marketplace" };
+  }
+
+  return {
+    title: `${product.name} | Instituto Potala Marketplace`,
+    description: product.description ?? product.name,
+  };
+}
+
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const product = getProductBySlug(slug);
+
+  if (!product) {
+    notFound();
+  }
+
+  const images = getProductImages(product);
+  const related = getRelatedProducts(product, 4);
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.container}>
+        <nav className={styles.breadcrumb} aria-label="Breadcrumb">
+          <ol>
+            <li>
+              <Link href="/">Início</Link>
+            </li>
+            <li>
+              <Link href={`/#categoria-${product.categoryId}`}>
+                {product.category}
+              </Link>
+            </li>
+            <li aria-current="page">{product.name}</li>
+          </ol>
+        </nav>
+
+        <div className={styles.topGrid}>
+          <div className={styles.galleryCol}>
+            <ProductGallery images={images} productName={product.name} />
+          </div>
+
+          <div className={styles.infoCol}>
+            <ProductInformation product={product} />
+          </div>
+
+          <div className={styles.panelCol}>
+            <ProductPurchasePanel product={product} />
+          </div>
+        </div>
+
+        <div className={styles.details}>
+          {product.longDescription ? (
+            <section
+              className={styles.block}
+              aria-labelledby="product-description-title"
+            >
+              <h2 id="product-description-title" className={styles.blockTitle}>
+                Descrição
+              </h2>
+              <p className={styles.copy}>{product.longDescription}</p>
+            </section>
+          ) : null}
+
+          {product.characteristics && product.characteristics.length > 0 ? (
+            <section
+              className={styles.block}
+              aria-labelledby="product-characteristics-title"
+            >
+              <h2
+                id="product-characteristics-title"
+                className={styles.blockTitle}
+              >
+                Características
+              </h2>
+              <dl className={styles.specs}>
+                {product.characteristics.map((item) => (
+                  <div key={item.label} className={styles.specRow}>
+                    <dt>{item.label}</dt>
+                    <dd>{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ) : null}
+
+          {product.shippingSummary && product.shippingSummary.length > 0 ? (
+            <section
+              className={styles.block}
+              aria-labelledby="product-shipping-title"
+            >
+              <h2 id="product-shipping-title" className={styles.blockTitle}>
+                Informações de entrega
+              </h2>
+              <ul className={styles.bullets}>
+                {product.shippingSummary.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          <ProductReviews product={product} />
+        </div>
+
+        <RelatedProducts products={related} />
+      </div>
+    </div>
+  );
+}

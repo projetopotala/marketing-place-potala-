@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Product } from "@/types/marketplace";
 import { formatPrice } from "@/data/marketplace";
 import {
@@ -21,6 +22,7 @@ export function ProductCard({
   const isDetails = product.action === "details";
   const actionLabel = isDetails ? "Ver detalhes" : "Adicionar ao carrinho";
   const isLight = tone === "light";
+  const href = `/produto/${product.slug}`;
 
   return (
     <article
@@ -36,8 +38,9 @@ export function ProductCard({
             : ""
       }`}
     >
-      <div
-        className={`relative overflow-hidden ${
+      <Link
+        href={href}
+        className={`relative overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold ${
           compact ? "aspect-square" : "aspect-[4/3]"
         }`}
       >
@@ -57,7 +60,7 @@ export function ProductCard({
             {product.badge}
           </span>
         ) : null}
-      </div>
+      </Link>
 
       <div
         className={`flex flex-1 flex-col ${
@@ -79,7 +82,12 @@ export function ProductCard({
               : "min-h-[2.6rem] text-[0.95rem] md:text-[1rem]"
           } ${isLight ? "text-potala-bg" : "text-potala-cream"}`}
         >
-          {product.name}
+          <Link
+            href={href}
+            className="transition hover:text-potala-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold"
+          >
+            {product.name}
+          </Link>
         </h3>
 
         <div
@@ -110,23 +118,38 @@ export function ProductCard({
           {formatPrice(product.price)}
         </p>
 
-        <button
-          type="button"
-          className={`mt-1 inline-flex w-full items-center gap-2 rounded-[0.375rem] border border-potala-gold/55 bg-transparent px-3 text-[0.8rem] font-semibold text-potala-gold transition hover:border-potala-gold-light hover:bg-potala-gold/10 hover:text-potala-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold-light ${
-            compact ? "min-h-9" : "min-h-[2.5rem]"
-          } ${isDetails ? "justify-center" : "justify-between"} ${
-            isLight
-              ? "border-[color:var(--potala-bg)]/25 text-[color:var(--potala-bg)] hover:bg-[color:var(--potala-bg)]/5"
-              : ""
-          }`}
-          aria-label={`${actionLabel}: ${product.name}`}
-        >
-          {!isDetails ? <CartIcon className="h-4 w-4 shrink-0" /> : null}
-          <span className={isDetails ? "" : "flex-1 text-left"}>
-            {actionLabel}
-          </span>
-          <ArrowRightIcon className="h-4 w-4 shrink-0" />
-        </button>
+        {isDetails ? (
+          <Link
+            href={href}
+            className={`mt-1 inline-flex w-full items-center gap-2 rounded-[0.375rem] border border-potala-gold/55 bg-transparent px-3 text-[0.8rem] font-semibold text-potala-gold transition hover:border-potala-gold-light hover:bg-potala-gold/10 hover:text-potala-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold-light ${
+              compact ? "min-h-9 justify-center" : "min-h-[2.5rem] justify-center"
+            } ${
+              isLight
+                ? "border-[color:var(--potala-bg)]/25 text-[color:var(--potala-bg)] hover:bg-[color:var(--potala-bg)]/5"
+                : ""
+            }`}
+            aria-label={`${actionLabel}: ${product.name}`}
+          >
+            <span>{actionLabel}</span>
+            <ArrowRightIcon className="h-4 w-4 shrink-0" />
+          </Link>
+        ) : (
+          <button
+            type="button"
+            className={`mt-1 inline-flex w-full items-center gap-2 rounded-[0.375rem] border border-potala-gold/55 bg-transparent px-3 text-[0.8rem] font-semibold text-potala-gold transition hover:border-potala-gold-light hover:bg-potala-gold/10 hover:text-potala-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold-light ${
+              compact ? "min-h-9 justify-between" : "min-h-[2.5rem] justify-between"
+            } ${
+              isLight
+                ? "border-[color:var(--potala-bg)]/25 text-[color:var(--potala-bg)] hover:bg-[color:var(--potala-bg)]/5"
+                : ""
+            }`}
+            aria-label={`${actionLabel}: ${product.name}`}
+          >
+            <CartIcon className="h-4 w-4 shrink-0" />
+            <span className="flex-1 text-left">{actionLabel}</span>
+            <ArrowRightIcon className="h-4 w-4 shrink-0" />
+          </button>
+        )}
       </div>
     </article>
   );

@@ -1,0 +1,70 @@
+.section {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.1rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.75rem;
+  background: var(--potala-panel);
+}
+
+.section h2 {
+  margin: 0;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: 1.2rem;
+  color: var(--potala-gold-light);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.item {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--potala-border);
+}
+
+.item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.item strong {
+  color: var(--potala-cream);
+}
+
+.item p {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--potala-text-muted);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status {
+  font-size: 0.78rem;
+  color: var(--potala-gold);
+}
+
+.total {
+  font-weight: 700;
+  color: var(--potala-cream);
+}
+
+@media (min-width: 768px) {
+  .item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}

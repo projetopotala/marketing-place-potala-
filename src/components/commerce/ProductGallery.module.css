@@ -1,0 +1,72 @@
+.gallery {
+  display: grid;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.main {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--potala-border);
+  background: var(--potala-panel);
+}
+
+.mainImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+.thumbs {
+  display: flex;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.15rem 0.1rem 0.35rem;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 4.5rem;
+  height: 4.5rem;
+  overflow: hidden;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.5rem;
+  background: var(--potala-panel);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.thumb:hover,
+.thumb:focus-visible {
+  border-color: var(--potala-gold);
+}
+
+.thumb:focus-visible {
+  outline: 2px solid var(--potala-gold-light);
+  outline-offset: 2px;
+}
+
+.thumbActive {
+  border-color: var(--potala-gold-light);
+  box-shadow: 0 0 0 1px var(--potala-gold);
+}
+
+.thumbImage {
+  object-fit: cover;
+}
+
+@media (min-width: 1024px) {
+  .thumbs {
+    overflow: visible;
+    flex-wrap: wrap;
+  }
+}

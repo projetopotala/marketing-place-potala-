@@ -17,8 +17,32 @@ export interface CategoryHighlight {
   imageAlt: string;
 }
 
+export interface ProductImage {
+  src: string;
+  alt: string;
+}
+
+export interface ProductCharacteristic {
+  label: string;
+  value: string;
+}
+
+export interface ProductSeller {
+  name: string;
+  rating: number;
+}
+
+export interface ProductReviewItem {
+  id: string;
+  author: string;
+  rating: number;
+  date: string;
+  comment: string;
+}
+
 export interface Product {
   id: string;
+  slug: string;
   name: string;
   category: string;
   categoryId: string;
@@ -32,6 +56,19 @@ export interface Product {
   featured?: boolean;
   popular?: boolean;
   isNew?: boolean;
+  sku?: string;
+  description?: string;
+  longDescription?: string;
+  stock?: number;
+  soldCount?: number;
+  originalPrice?: number;
+  discountPercent?: number;
+  seller?: ProductSeller;
+  images?: ProductImage[];
+  characteristics?: ProductCharacteristic[];
+  shippingSummary?: string[];
+  paymentSummary?: string[];
+  reviews?: ProductReviewItem[];
 }
 
 export interface CompactProduct {
@@ -73,11 +110,11 @@ export interface FooterColumn {
 export interface ContactInfo {
   phone: string;
   email: string;
-  hours: string;
+  hours: string[];
 }
 
 export interface PaymentMethod {
-  id: string;
+  id: "visa" | "mastercard" | "elo" | "pix" | "boleto";
   label: string;
-  imageSrc: string;
+  imageSrc?: string;
 }

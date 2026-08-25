@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { CompactProduct } from "@/types/marketplace";
 import { formatPrice } from "@/data/marketplace";
 import { StarIcon } from "@/components/storefront/icons";
@@ -9,7 +10,7 @@ interface CompactProductCardProps {
 
 export function CompactProductCard({ product }: CompactProductCardProps) {
   return (
-    <a
+    <Link
       href={product.href}
       className="discovery-compact-card group block min-w-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold"
     >
@@ -46,6 +47,6 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
           ({product.reviewCount})
         </span>
       </div>
-    </a>
+    </Link>
   );
 }

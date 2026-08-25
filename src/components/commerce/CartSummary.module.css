@@ -1,0 +1,91 @@
+.summary {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--potala-border);
+  border-radius: 0.75rem;
+  background: var(--potala-panel);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-potala-serif), Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--potala-cream);
+}
+
+.rows {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--potala-text-muted);
+}
+
+.row dd {
+  margin: 0;
+  color: var(--potala-cream);
+  font-weight: 600;
+}
+
+.total {
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--potala-border);
+  font-size: 1.05rem;
+}
+
+.total dt,
+.total dd {
+  color: var(--potala-gold-light);
+}
+
+.checkout,
+.continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.85rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.checkout {
+  background: linear-gradient(180deg, var(--potala-gold-light), var(--potala-gold));
+  color: var(--potala-bg);
+}
+
+.checkout:hover {
+  filter: brightness(1.05);
+}
+
+.continue {
+  border: 1px solid var(--potala-border);
+  color: var(--potala-gold);
+}
+
+.continue:hover {
+  border-color: var(--potala-gold);
+}
+
+.checkout:focus-visible,
+.continue:focus-visible {
+  outline: 2px solid var(--potala-gold-light);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  .summary {
+    position: sticky;
+    top: 7.5rem;
+  }
+}
