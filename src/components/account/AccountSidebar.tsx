@@ -1,18 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
   MapPin,
-  CreditCard,
   Heart,
   Star,
   TicketPercent,
   Settings,
   LogOut,
+  Undo2,
+  HelpCircle,
   type LucideIcon,
 } from "lucide-react";
 import { ACCOUNT_SIDEBAR_ITEMS } from "@/data/account";
@@ -26,27 +26,29 @@ interface AccountSidebarProps {
 const ICONS: Record<string, LucideIcon> = {
   resumo: LayoutDashboard,
   pedidos: Package,
+  devolucoes: Undo2,
   enderecos: MapPin,
-  pagamentos: CreditCard,
   favoritos: Heart,
   avaliacoes: Star,
   cupons: TicketPercent,
   configuracoes: Settings,
+  ajuda: HelpCircle,
 };
 
+function isActive(pathname: string, href?: string) {
+  if (!href) return false;
+  if (href === "/minha-conta") return pathname === "/minha-conta";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function AccountSidebar({ className = "" }: AccountSidebarProps) {
+  const pathname = usePathname();
   const router = useRouter();
   const { signOut } = useAuth();
-  const [status, setStatus] = useState<string | null>(null);
 
   function handleSignOut() {
     signOut();
     router.push("/acesso");
-  }
-
-  function handleSoon(label: string) {
-    setStatus(`${label}: disponível em breve.`);
-    window.setTimeout(() => setStatus(null), 2800);
   }
 
   return (
@@ -56,13 +58,14 @@ export function AccountSidebar({ className = "" }: AccountSidebarProps) {
         <ul className={styles.list}>
           {ACCOUNT_SIDEBAR_ITEMS.map((item) => {
             const Icon = ICONS[item.id] ?? LayoutDashboard;
+            const active = isActive(pathname, item.href);
             if (item.available && item.href) {
               return (
                 <li key={item.id}>
                   <Link
                     href={item.href}
-                    className={`${styles.link} ${item.id === "resumo" ? styles.active : ""}`}
-                    aria-current={item.id === "resumo" ? "page" : undefined}
+                    className={`${styles.link} ${active ? styles.active : ""}`}
+                    aria-current={active ? "page" : undefined}
                   >
                     <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
                     <span>{item.label}</span>
@@ -71,21 +74,7 @@ export function AccountSidebar({ className = "" }: AccountSidebarProps) {
               );
             }
 
-            return (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  className={styles.disabled}
-                  onClick={() => handleSoon(item.label)}
-                >
-                  <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
-                  <span>
-                    {item.label}
-                    <small>Disponível em breve</small>
-                  </span>
-                </button>
-              </li>
-            );
+            return null;
           })}
         </ul>
       </nav>
@@ -93,22 +82,13 @@ export function AccountSidebar({ className = "" }: AccountSidebarProps) {
       <div className={styles.help}>
         <h3>Precisa de ajuda?</h3>
         <p>Nossa equipe acompanha sua jornada com cuidado e presença.</p>
-        <button
-          type="button"
-          className={styles.support}
-          onClick={() => handleSoon("Suporte")}
-        >
-          Falar com o suporte · Em breve
-        </button>
+        <Link href="/minha-conta/ajuda" className={styles.support}>
+          Central de ajuda
+        </Link>
         <button type="button" className={styles.logout} onClick={handleSignOut}>
           <LogOut size={16} strokeWidth={1.7} aria-hidden="true" />
           Sair
         </button>
-        {status ? (
-          <p className={styles.status} role="status" aria-live="polite">
-            {status}
-          </p>
-        ) : null}
       </div>
     </aside>
   );

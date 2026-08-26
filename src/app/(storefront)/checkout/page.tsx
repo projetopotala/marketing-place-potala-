@@ -14,6 +14,8 @@ import {
 } from "@/data/cart";
 import { formatPrice } from "@/data/marketplace";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { useAccountData } from "@/features/account/AccountDataContext";
 import styles from "./page.module.css";
 
 interface FormErrors {
@@ -31,6 +33,8 @@ interface FormErrors {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, isReady, clearCart } = useCart();
+  const { user } = useAuth();
+  const { appendOrderFromCheckout } = useAccountData();
   const formId = useId();
 
   const [fullName, setFullName] = useState("");
@@ -111,6 +115,9 @@ export default function CheckoutPage() {
     };
 
     window.sessionStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order));
+    if (user?.role === "customer") {
+      appendOrderFromCheckout(order);
+    }
     clearCart();
     router.push("/checkout/sucesso");
   }

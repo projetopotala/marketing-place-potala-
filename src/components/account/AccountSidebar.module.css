@@ -66,9 +66,16 @@
 }
 
 .support {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
   border: 1px dashed var(--potala-border);
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--potala-text-secondary);
+  text-decoration: none;
   cursor: pointer;
 }
 

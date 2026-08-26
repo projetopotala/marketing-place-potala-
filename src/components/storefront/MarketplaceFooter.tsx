@@ -5,6 +5,7 @@ import {
   PAYMENT_METHODS,
   SOCIAL_LINKS,
 } from "@/data/marketplace";
+import Link from "next/link";
 import { BrandLogo } from "@/components/storefront/BrandLogo";
 import { PaymentBrand } from "@/components/storefront/PaymentBrand";
 import {
@@ -31,28 +32,37 @@ export function MarketplaceFooter() {
     <footer id="contato" className="marketplace-footer">
       <div className="marketplace-footer__container">
         <div className="marketplace-footer__brand">
-          <a href="#topo" className="inline-flex focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold">
+          <Link href="/#topo" className="inline-flex focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold">
             <BrandLogo variant="footer" />
-          </a>
+          </Link>
           <p className="marketplace-footer__description">{BRAND.description}</p>
           <ul className="marketplace-footer__social">
             {SOCIAL_LINKS.map((social) => {
               const Icon = socialIcons[social.id];
               return (
                 <li key={social.id}>
-                  <a
-                    href={social.href}
-                    className="marketplace-footer__social-link"
-                    aria-label={social.label}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </a>
+                  {social.href ? (
+                    <a
+                      href={social.href}
+                      className="marketplace-footer__social-link"
+                      aria-label={social.label}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </a>
+                  ) : (
+                    <span
+                      className="marketplace-footer__social-link"
+                      aria-label={`${social.label} (em breve)`}
+                      title="Link oficial ainda não disponível"
+                    >
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                  )}
                 </li>
               );
             })}
           </ul>
         </div>
-
         {FOOTER_COLUMNS.map((column) => (
           <div key={column.title} className="marketplace-footer__column">
             <h2 className="marketplace-footer__heading">{column.title}</h2>

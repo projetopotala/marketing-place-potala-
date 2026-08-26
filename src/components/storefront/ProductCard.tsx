@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import type { Product } from "@/types/marketplace";
 import { formatPrice } from "@/data/marketplace";
 import {
@@ -7,6 +10,8 @@ import {
   CartIcon,
   StarIcon,
 } from "@/components/storefront/icons";
+import { useAccountData } from "@/features/account/AccountDataContext";
+import { useAuth } from "@/context/AuthContext";
 
 interface ProductCardProps {
   product: Product;
@@ -23,10 +28,16 @@ export function ProductCard({
   const actionLabel = isDetails ? "Ver detalhes" : "Adicionar ao carrinho";
   const isLight = tone === "light";
   const href = `/produto/${product.slug}`;
+  const { user } = useAuth();
+  const { isFavorite, toggleFavorite, isHydrated } = useAccountData();
+  const favorite =
+    user?.role === "customer" && isHydrated
+      ? isFavorite(product.id)
+      : false;
 
   return (
     <article
-      className={`group flex h-full flex-col overflow-hidden border transition ${
+      className={`group relative flex h-full flex-col overflow-hidden border transition ${
         compact
           ? "w-[11.5rem] shrink-0 sm:w-52"
           : "featured-product-card w-full min-w-0"
@@ -38,6 +49,35 @@ export function ProductCard({
             : ""
       }`}
     >
+      {user?.role === "customer" ? (
+        <button
+          type="button"
+          className="absolute right-2 top-2 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-potala-border bg-potala-bg/80 text-potala-gold"
+          aria-label={
+            favorite
+              ? `Remover ${product.name} dos favoritos`
+              : `Adicionar ${product.name} aos favoritos`
+          }
+          aria-pressed={favorite}
+          onClick={() =>
+            toggleFavorite({
+              productId: product.id,
+              slug: product.slug,
+              name: product.name,
+              imageSrc: product.imageSrc,
+              price: product.price,
+            })
+          }
+        >
+          <Heart
+            size={18}
+            strokeWidth={1.7}
+            fill={favorite ? "currentColor" : "none"}
+            aria-hidden="true"
+          />
+        </button>
+      ) : null}
+
       <Link
         href={href}
         className={`relative overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold ${

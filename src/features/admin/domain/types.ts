@@ -64,6 +64,7 @@ export interface AdminTimelineEvent {
 export interface Seller {
   id: string;
   name: string;
+  slug?: string;
   email: string;
   phone: string;
   city: string;
@@ -74,6 +75,8 @@ export interface Seller {
   rating: number;
   documentLabel: string;
   notes: string;
+  description?: string;
+  coverImageSrc?: string;
   createdAt: string;
   updatedAt: string;
   timeline: AdminTimelineEvent[];
@@ -82,6 +85,7 @@ export interface Seller {
 export interface AdminProduct {
   id: string;
   title: string;
+  slug?: string;
   sellerId: string;
   categoryId: string;
   priceCents: MoneyCents;
@@ -90,6 +94,8 @@ export interface AdminProduct {
   featured: boolean;
   description: string;
   imageSrc: string;
+  imageAlt?: string;
+  gallery?: Array<{ src: string; alt: string }>;
   attributes: Record<string, string>;
   moderationNote?: string;
   createdAt: string;

@@ -16,14 +16,22 @@ interface AuthGuardProps {
  */
 export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
-  const { isAuthenticated, isHydrated } = useAuth();
+  const { user, isAuthenticated, isHydrated } = useAuth();
 
   useEffect(() => {
     if (!isHydrated) return;
     if (!isAuthenticated) {
       router.replace("/acesso");
+      return;
     }
-  }, [isAuthenticated, isHydrated, router]);
+    if (user?.role === "seller") {
+      router.replace("/loja");
+      return;
+    }
+    if (user?.role === "admin") {
+      router.replace("/admin");
+    }
+  }, [isAuthenticated, isHydrated, router, user?.role]);
 
   if (!isHydrated) {
     return (
@@ -34,10 +42,10 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || user?.role !== "customer") {
     return (
       <div className={styles.loading} role="status" aria-live="polite">
-        <p>Redirecionando para o acesso…</p>
+        <p>Redirecionando…</p>
       </div>
     );
   }

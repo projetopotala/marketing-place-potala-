@@ -21,11 +21,18 @@ export function AccountHeaderLink() {
 
   if (isAuthenticated && user) {
     const firstName = user.name.trim().split(/\s+/)[0] || "Conta";
-    const href = user.role === "admin" ? "/admin" : "/minha-conta";
+    const href =
+      user.role === "admin"
+        ? "/admin"
+        : user.role === "seller"
+          ? "/loja"
+          : "/minha-conta";
     const label =
       user.role === "admin"
         ? `Abrir painel administrativo de ${user.name}`
-        : `Abrir minha conta de ${user.name}`;
+        : user.role === "seller"
+          ? `Abrir painel do vendedor de ${user.name}`
+          : `Abrir minha conta de ${user.name}`;
 
     return (
       <Link
@@ -37,7 +44,11 @@ export function AccountHeaderLink() {
         <span className="hidden leading-tight md:block">
           <span className="block text-sm font-medium">{firstName}</span>
           <span className="block text-xs text-potala-muted">
-            {user.role === "admin" ? "Painel admin" : "Minha conta"}
+            {user.role === "admin"
+              ? "Painel admin"
+              : user.role === "seller"
+                ? "Minha loja"
+                : "Minha conta"}
           </span>
         </span>
       </Link>

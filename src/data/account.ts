@@ -1,81 +1,59 @@
 import { PRODUCTS } from "@/data/marketplace";
 import type {
-  AccountAddress,
   AccountCoupon,
   AccountFavorite,
-  AccountMetric,
-  AccountOrderSummary,
   AccountSidebarItem,
 } from "@/types/account";
 
 export const ACCOUNT_SIDEBAR_ITEMS: AccountSidebarItem[] = [
   { id: "resumo", label: "Resumo da Conta", href: "/minha-conta", available: true },
-  { id: "pedidos", label: "Meus Pedidos", available: false },
-  { id: "enderecos", label: "Endereços", available: false },
-  { id: "pagamentos", label: "Formas de Pagamento", available: false },
-  { id: "favoritos", label: "Favoritos", available: false },
-  { id: "avaliacoes", label: "Avaliações", available: false },
-  { id: "cupons", label: "Cupons", available: false },
-  { id: "configuracoes", label: "Configurações", available: false },
-];
-
-export const ACCOUNT_METRICS: AccountMetric[] = [
   {
-    id: "pedidos-recentes",
-    label: "Pedidos recentes",
-    value: "3",
-    hint: "Últimos 90 dias",
+    id: "pedidos",
+    label: "Meus Pedidos",
+    href: "/minha-conta/pedidos",
+    available: true,
   },
   {
-    id: "cupons",
-    label: "Cupons disponíveis",
-    value: "2",
-    hint: "Prontos para uso",
+    id: "devolucoes",
+    label: "Devoluções",
+    href: "/minha-conta/devolucoes",
+    available: true,
   },
   {
     id: "enderecos",
-    label: "Endereços salvos",
-    value: "2",
-    hint: "Entrega e cobrança",
+    label: "Endereços",
+    href: "/minha-conta/enderecos",
+    available: true,
   },
   {
     id: "favoritos",
     label: "Favoritos",
-    value: "4",
-    hint: "Lista de desejos",
+    href: "/minha-conta/favoritos",
+    available: true,
   },
   {
     id: "avaliacoes",
-    label: "Avaliações pendentes",
-    value: "1",
-    hint: "Aguardando sua opinião",
-  },
-];
-
-export const ACCOUNT_RECENT_ORDERS: AccountOrderSummary[] = [
-  {
-    id: "ord-1",
-    code: "POT-2026-0042",
-    date: "18/08/2026",
-    status: "Entregue",
-    total: 169.8,
-    itemCount: 2,
+    label: "Avaliações",
+    href: "/minha-conta/avaliacoes",
+    available: true,
   },
   {
-    id: "ord-2",
-    code: "POT-2026-0038",
-    date: "02/08/2026",
-    status: "Em trânsito",
-    total: 129.9,
-    itemCount: 1,
+    id: "cupons",
+    label: "Cupons",
+    href: "/minha-conta/cupons",
+    available: true,
   },
   {
-    id: "ord-3",
-    code: "POT-2026-0029",
-    date: "15/07/2026",
-    status: "Entregue",
-    total: 297,
-    itemCount: 1,
+    id: "configuracoes",
+    label: "Configurações",
+    href: "/minha-conta/configuracoes",
+    available: true,
+  },
+  {
+    id: "ajuda",
+    label: "Central de ajuda",
+    href: "/minha-conta/ajuda",
+    available: true,
   },
 ];
 
@@ -94,22 +72,7 @@ export const ACCOUNT_ACTIVE_COUPONS: AccountCoupon[] = [
   },
 ];
 
-export const ACCOUNT_ADDRESSES: AccountAddress[] = [
-  {
-    id: "addr-1",
-    label: "Casa",
-    line: "Rua das Flores, 120 — Apto 42",
-    city: "São Paulo, SP · 01310-100",
-    isDefault: true,
-  },
-  {
-    id: "addr-2",
-    label: "Trabalho",
-    line: "Av. Paulista, 1000 — Sala 801",
-    city: "São Paulo, SP · 01310-200",
-  },
-];
-
+/** Fallback estático — preferir `useAccountData().db.favorites`. */
 export function getAccountFavorites(): AccountFavorite[] {
   return PRODUCTS.filter((product) =>
     ["japamala", "ametista-premium", "palo-santo", "poder-do-agora"].includes(
@@ -129,3 +92,34 @@ export const ACCOUNT_WELCOME_STATS = {
   totalOrders: 6,
   totalSpent: 1248.5,
 };
+
+export const ACCOUNT_HELP_FAQS = [
+  {
+    id: "faq-1",
+    category: "Pedidos",
+    question: "Como acompanho meu pedido?",
+    answer:
+      "Em Minha conta → Meus pedidos você encontra o status e a timeline demonstrativa.",
+  },
+  {
+    id: "faq-2",
+    category: "Entrega",
+    question: "Qual o prazo de entrega?",
+    answer:
+      "O prazo depende da modalidade escolhida no checkout. Sem backend, os prazos são ilustrativos.",
+  },
+  {
+    id: "faq-3",
+    category: "Devoluções",
+    question: "Posso devolver um produto?",
+    answer:
+      "Pedidos com status Entregue podem abrir solicitação em Devoluções (fluxo demonstrativo local).",
+  },
+  {
+    id: "faq-4",
+    category: "Conta",
+    question: "Esqueci minha senha",
+    answer:
+      "Neste demo não há recuperação de senha. Em produção isso exige backend autenticado.",
+  },
+];

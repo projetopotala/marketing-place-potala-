@@ -1,23 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { BrandLogo } from "@/components/storefront/BrandLogo";
 import { CategoryNavigation } from "@/components/storefront/CategoryNavigation";
+import { StorefrontSearch } from "@/components/storefront/StorefrontSearch";
 import { AccountHeaderLink } from "@/components/account/AccountHeaderLink";
 import { useCart } from "@/context/CartContext";
 import {
   CartIcon,
   CloseIcon,
   MenuIcon,
-  SearchIcon,
 } from "@/components/storefront/icons";
 
 export function MarketplaceHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const { totalItems, isReady } = useCart();
-  const searchId = useId();
   const menuId = "mobile-category-menu";
   const cartCount = isReady ? totalItems : 0;
 
@@ -71,29 +69,12 @@ export function MarketplaceHeader() {
           </button>
         </div>
 
-        <form
-          className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-1 md:max-w-[690px] md:justify-self-stretch lg:w-full lg:max-w-[690px] lg:justify-self-center"
+        <div
           role="search"
-          onSubmit={(event) => event.preventDefault()}
+          className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-1 md:max-w-[690px] md:justify-self-stretch lg:w-full lg:max-w-[690px] lg:justify-self-center"
         >
-          <label htmlFor={searchId} className="sr-only">
-            Buscar produtos, cursos, livros
-          </label>
-          <div className="relative">
-            <input
-              id={searchId}
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Buscar produtos, cursos, livros..."
-              className="potala-input pr-12"
-              autoComplete="off"
-            />
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-potala-gold">
-              <SearchIcon className="h-5 w-5" />
-            </span>
-          </div>
-        </form>
+          <StorefrontSearch />
+        </div>
       </div>
 
       <CategoryNavigation />

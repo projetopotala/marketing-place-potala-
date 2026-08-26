@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Instituto Potala Marketplace
 
-## Getting Started
+Frontend demonstrativo do marketplace espiritual do Instituto Potala: vitrine pública, checkout, conta do comprador, painel do vendedor e painel administrativo.
 
-First, run the development server:
+Este repositório **não** inclui backend de produção. Autenticação, pedidos, estoque e financeiro usam persistência local (`localStorage` / `sessionStorage`) apenas para demonstração.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+- Next.js 16.3.2 (App Router)
+- React 19 + TypeScript strict
+- Tailwind CSS v4 + CSS Modules
+- shadcn/ui (Radix) — componentes acessíveis sob identidade Potala
+- Lucide React, Motion, Recharts, Embla Carousel
+- Playwright (E2E)
+
+## Estrutura de pastas
+
+```
+src/app/(storefront)/   # Home, produto, carrinho, checkout, acesso, vitrine /vendedor
+src/app/(account)/      # Minha conta e sub-rotas
+src/app/(admin)/admin/  # Painel administrativo
+src/app/(seller)/loja/  # Painel do vendedor
+src/components/         # UI por domínio (storefront, account, admin, seller)
+src/features/admin/     # Domínio, seed, repository e selectors admin
+src/features/seller/    # Selectors filtrados por sellerId
+src/features/account/   # Persistência demonstrativa do comprador
+src/features/catalog/   # Adapters admin ↔ vitrine
+src/data/               # Catálogo estático SSG e conteúdo editorial
+src/styles/             # Tokens TypeScript
+tests/e2e/              # Playwright
+docs/                   # Backlog e notas de paridade
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Rotas principais
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Área | Rotas |
+| --- | --- |
+| Storefront | `/`, `/produto/[slug]`, `/carrinho`, `/checkout`, `/checkout/sucesso`, `/acesso`, `/vendedor/[slug]` |
+| Conta | `/minha-conta`, `/pedidos`, `/pedidos/[id]`, `/devolucoes`, `/avaliacoes`, `/enderecos`, `/favoritos`, `/cupons`, `/configuracoes`, `/ajuda` |
+| Vendedor | `/loja`, `/loja/pedidos`, `/loja/produtos`, `/loja/entregas`, `/loja/financeiro`, `/loja/cupons`, `/loja/estoque`, `/loja/avaliacoes`, `/loja/configuracoes` |
+| Admin | `/admin` e módulos (vendedores, produtos, pedidos, financeiro, etc.) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`/loja/dashboard` redireciona para `/loja`.
 
-## Learn More
+## Contas demonstrativas
 
-To learn more about Next.js, take a look at the following resources:
+| Papel | E-mail | Destino |
+| --- | --- | --- |
+| Admin | `admin@potala.demo` | `/admin` |
+| Vendedor | `vendedor@potala.demo` | `/loja` (`sellerId` = `sel-1`) |
+| Cliente | qualquer outro e-mail | `/minha-conta` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Senha: qualquer valor com pelo menos 6 caracteres no formulário demo.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+```bash
+npm run dev          # desenvolvimento
+npm run lint         # ESLint
+npm run build        # build de produção
+npm run start        # servir build
+npm run test:e2e     # build + Playwright (porta 3100)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Armazenamento local
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Chave | Uso |
+| --- | --- |
+| `potala-demo-session-v1` | Sessão autenticada demo |
+| `potala-demo-user-v1` | Perfil cadastrado demo |
+| `potala-admin-demo-db-v1` | Banco admin/seller |
+| `potala-customer-account-v1:<userId>` | Pedidos, endereços, favoritos, etc. do cliente |
+| Carrinho / pedido | chaves em `src/data/cart.ts` |
+
+Storage corrompido é ignorado e substituído por seed seguro.
+
+## Limitações sem backend
+
+- Produtos criados só no `localStorage` **não** entram em páginas SSG (`/produto/[slug]`, `/vendedor/[slug]`).
+- Não há sincronização multi-dispositivo nem autenticação segura.
+- Uploads de imagem, gateways e e-mail são simulados.
+- Redes sociais sem URL oficial permanecem como placeholders não navegáveis.
+
+## Arquitetura por papel
+
+- **Admin**: `AdminShell` + `LocalAdminRepository` (fonte canônica demo de sellers/produtos/pedidos).
+- **Seller**: `SellerShell` próprio; selectors filtrados por `sellerId`; mesmas mutações do repository admin.
+- **Customer**: `AccountChrome` + `AccountDataProvider`; checkout autenticado acrescenta pedido ao histórico local.
+
+Adapters em `src/features/catalog/adapters.ts` alinham seed admin aos slugs/imagens da vitrine sem reescrita destrutiva.
+
+## Como executar
+
+1. `npm install`
+2. `npm run dev`
+3. Abrir `http://localhost:3000`
+
+## Qualidade
+
+Antes de liberar mudanças:
+
+```bash
+npm run lint
+npm run build
+npm run test:e2e
+```
+
+Consulte `docs/pdf-parity-backlog.md` para o status da paridade com o PDF do cliente.

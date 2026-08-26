@@ -13,6 +13,7 @@ import type { DemoSession, DemoUserProfile, UserRole } from "@/types/auth";
 import {
   DEMO_SESSION_STORAGE_KEY,
   DEMO_USER_STORAGE_KEY,
+  resolveSellerId,
   resolveUserRole,
 } from "@/types/auth";
 
@@ -63,7 +64,9 @@ function normalizeSession(value: unknown): DemoSession | null {
   }
 
   const role: UserRole =
-    session.role === "admin" || session.role === "customer"
+    session.role === "admin" ||
+    session.role === "customer" ||
+    session.role === "seller"
       ? session.role
       : resolveUserRole(session.email);
 
@@ -74,6 +77,10 @@ function normalizeSession(value: unknown): DemoSession | null {
     role,
     remember: session.remember,
     signedInAt: session.signedInAt,
+    sellerId:
+      typeof session.sellerId === "string"
+        ? session.sellerId
+        : resolveSellerId(session.email, role),
   };
 }
 
@@ -93,7 +100,12 @@ function readProfile(): DemoUserProfile | null {
 
   return {
     ...parsed,
-    role: parsed.role === "admin" ? "admin" : "customer",
+    role:
+      parsed.role === "admin" ||
+      parsed.role === "seller" ||
+      parsed.role === "customer"
+        ? parsed.role
+        : resolveUserRole(parsed.email),
   };
 }
 
@@ -187,8 +199,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name:
           role === "admin"
             ? "Administrador Potala"
-            : profile?.name?.trim() || "Cliente Potala",
+            : role === "seller"
+              ? "Vendedor Potala"
+              : profile?.name?.trim() || "Cliente Potala",
         role,
+        sellerId: resolveSellerId(email, role),
         remember: input.remember,
         signedInAt: new Date().toISOString(),
       };

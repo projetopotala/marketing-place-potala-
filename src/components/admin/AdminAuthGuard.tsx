@@ -27,6 +27,10 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
     }
 
     if (user?.role !== "admin") {
+      if (user?.role === "seller") {
+        router.replace("/loja");
+        return;
+      }
       router.replace("/minha-conta");
     }
   }, [isAuthenticated, isHydrated, router, user?.role]);

@@ -35,7 +35,13 @@ export function LoginForm({
       return;
     }
 
-    router.push(result.role === "admin" ? "/admin" : "/minha-conta");
+    router.push(
+      result.role === "admin"
+        ? "/admin"
+        : result.role === "seller"
+          ? "/loja"
+          : "/minha-conta",
+    );
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {

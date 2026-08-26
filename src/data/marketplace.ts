@@ -24,65 +24,65 @@ export const BRAND = {
 };
 
 export const NAV_CATEGORIES: NavCategory[] = [
-  { id: "categorias", label: "Categorias", href: "#categorias", hasMenu: true },
-  { id: "cursos", label: "Cursos", href: "#categoria-cursos" },
-  { id: "terapias", label: "Terapias", href: "#categoria-terapias" },
-  { id: "livros", label: "Livros", href: "#categoria-livros" },
-  { id: "incensos", label: "Incensos", href: "#categoria-incensos" },
-  { id: "cristais", label: "Cristais", href: "#categoria-cristais" },
-  { id: "acessorios", label: "Acessórios", href: "#categoria-acessorios" },
-  { id: "meditacao", label: "Meditação", href: "#categoria-meditacao" },
-  { id: "novidades", label: "Novidades", href: "#novidades" },
-  { id: "ofertas", label: "Ofertas", href: "#produtos" },
+  { id: "categorias", label: "Categorias", href: "/#categorias", hasMenu: true },
+  { id: "cursos", label: "Cursos", href: "/#categoria-cursos" },
+  { id: "terapias", label: "Terapias", href: "/#categoria-terapias" },
+  { id: "livros", label: "Livros", href: "/#categoria-livros" },
+  { id: "incensos", label: "Incensos", href: "/#categoria-incensos" },
+  { id: "cristais", label: "Cristais", href: "/#categoria-cristais" },
+  { id: "acessorios", label: "Acessórios", href: "/#categoria-acessorios" },
+  { id: "meditacao", label: "Meditação", href: "/#categoria-meditacao" },
+  { id: "novidades", label: "Novidades", href: "/#novidades" },
+  { id: "ofertas", label: "Ofertas", href: "/#produtos" },
 ];
 
 export const FEATURED_CATEGORIES: CategoryHighlight[] = [
   {
     id: "cursos",
     name: "Cursos",
-    href: "#categoria-cursos",
+    href: "/#categoria-cursos",
     imageSrc: "/images/potala/category-cursos-final.png",
     imageAlt: "",
   },
   {
     id: "incensos",
     name: "Incensos",
-    href: "#categoria-incensos",
+    href: "/#categoria-incensos",
     imageSrc: "/images/potala/category-incensos-final.png",
     imageAlt: "",
   },
   {
     id: "cristais",
     name: "Cristais",
-    href: "#categoria-cristais",
+    href: "/#categoria-cristais",
     imageSrc: "/images/potala/category-cristais-final.png",
     imageAlt: "",
   },
   {
     id: "livros",
     name: "Livros",
-    href: "#categoria-livros",
+    href: "/#categoria-livros",
     imageSrc: "/images/potala/category-livros-final.png",
     imageAlt: "",
   },
   {
     id: "terapias",
     name: "Terapias",
-    href: "#categoria-terapias",
+    href: "/#categoria-terapias",
     imageSrc: "/images/potala/category-terapias-final.png",
     imageAlt: "",
   },
   {
     id: "acessorios",
     name: "Acessórios",
-    href: "#categoria-acessorios",
+    href: "/#categoria-acessorios",
     imageSrc: "/images/potala/category-acessorios-final.png",
     imageAlt: "",
   },
   {
     id: "meditacao",
     name: "Meditação",
-    href: "#categoria-meditacao",
+    href: "/#categoria-meditacao",
     imageSrc: "/images/potala/category-meditacao-final.png",
     imageAlt: "",
   },
@@ -533,31 +533,31 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Institucional",
     links: [
-      { label: "Sobre o Instituto Potala", href: "#filosofia" },
-      { label: "Nossa Filosofia", href: "#filosofia" },
-      { label: "Blog", href: "#newsletter" },
-      { label: "Trabalhe Conosco", href: "#contato" },
-      { label: "Seja um Parceiro", href: "#contato" },
+      { label: "Sobre o Instituto Potala", href: "/#filosofia" },
+      { label: "Nossa Filosofia", href: "/#filosofia" },
+      { label: "Blog", href: "/#newsletter" },
+      { label: "Trabalhe Conosco", href: "/#contato" },
+      { label: "Seja um Parceiro", href: "/#contato" },
     ],
   },
   {
     title: "Ajuda",
     links: [
-      { label: "Central de Ajuda", href: "#contato" },
-      { label: "Como Comprar", href: "#produtos" },
-      { label: "Trocas e Devoluções", href: "#contato" },
-      { label: "Formas de Pagamento", href: "#contato" },
-      { label: "Política de Privacidade", href: "#contato" },
+      { label: "Central de Ajuda", href: "/minha-conta/ajuda" },
+      { label: "Como Comprar", href: "/#produtos" },
+      { label: "Trocas e Devoluções", href: "/minha-conta/devolucoes" },
+      { label: "Formas de Pagamento", href: "/#contato" },
+      { label: "Política de Privacidade", href: "/#contato" },
     ],
   },
   {
     title: "Minha Conta",
     links: [
-      { label: "Meus Pedidos", href: "#topo" },
-      { label: "Lista de Desejos", href: "#topo" },
-      { label: "Cursos e Conteúdos", href: "#categoria-cursos" },
-      { label: "Meus Endereços", href: "#topo" },
-      { label: "Minha Conta", href: "#topo" },
+      { label: "Meus Pedidos", href: "/minha-conta/pedidos" },
+      { label: "Lista de Desejos", href: "/minha-conta/favoritos" },
+      { label: "Cursos e Conteúdos", href: "/#categoria-cursos" },
+      { label: "Meus Endereços", href: "/minha-conta/enderecos" },
+      { label: "Minha Conta", href: "/minha-conta" },
     ],
   },
 ];
@@ -597,10 +597,10 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 export const SOCIAL_LINKS = [
-  { id: "instagram", label: "Instagram", href: "#topo" },
-  { id: "facebook", label: "Facebook", href: "#topo" },
-  { id: "youtube", label: "YouTube", href: "#topo" },
-  { id: "pinterest", label: "Pinterest", href: "#topo" },
+  { id: "instagram", label: "Instagram", href: null },
+  { id: "facebook", label: "Facebook", href: null },
+  { id: "youtube", label: "YouTube", href: null },
+  { id: "pinterest", label: "Pinterest", href: null },
 ] as const;
 
 export function formatPrice(value: number): string {
