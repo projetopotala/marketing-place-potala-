@@ -1,12 +1,9 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { useReducedMotion } from "motion/react";
+import type { EmblaCarouselType } from "embla-carousel";
 import type { Product } from "@/types/marketplace";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import {
@@ -18,77 +15,70 @@ interface FeaturedProductsCarouselProps {
   products: Product[];
 }
 
+function subscribeEmbla(
+  emblaApi: EmblaCarouselType | undefined,
+  onStoreChange: () => void,
+) {
+  if (!emblaApi) return () => {};
+  emblaApi.on("select", onStoreChange);
+  emblaApi.on("reInit", onStoreChange);
+  return () => {
+    emblaApi.off("select", onStoreChange);
+    emblaApi.off("reInit", onStoreChange);
+  };
+}
+
+function useEmblaScrollState(emblaApi: EmblaCarouselType | undefined) {
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => subscribeEmbla(emblaApi, onStoreChange),
+    [emblaApi],
+  );
+
+  const canPrev = useSyncExternalStore(
+    subscribe,
+    () => emblaApi?.canScrollPrev() ?? false,
+    () => false,
+  );
+  const canNext = useSyncExternalStore(
+    subscribe,
+    () => emblaApi?.canScrollNext() ?? false,
+    () => false,
+  );
+
+  return { canPrev, canNext };
+}
+
 export function FeaturedProductsCarousel({
   products,
 }: FeaturedProductsCarouselProps) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(false);
-
-  const updateControls = useCallback(() => {
-    const track = trackRef.current;
-    if (!track) {
-      return;
-    }
-
-    const maxScroll = track.scrollWidth - track.clientWidth;
-    setCanPrev(track.scrollLeft > 4);
-    setCanNext(maxScroll > 4 && track.scrollLeft < maxScroll - 4);
-  }, []);
+  const reduceMotion = useReducedMotion();
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+    duration: reduceMotion ? 0 : 22,
+  });
+  const { canPrev, canNext } = useEmblaScrollState(emblaApi);
 
   useEffect(() => {
-    const track = trackRef.current;
-    if (!track) {
-      return;
-    }
-
-    updateControls();
-    track.addEventListener("scroll", updateControls, { passive: true });
-    window.addEventListener("resize", updateControls);
-
-    return () => {
-      track.removeEventListener("scroll", updateControls);
-      window.removeEventListener("resize", updateControls);
-    };
-  }, [products, updateControls]);
-
-  function scrollByPage(direction: 1 | -1) {
-    const track = trackRef.current;
-    if (!track) {
-      return;
-    }
-
-    const amount = Math.max(track.clientWidth * 0.92, 240);
-    track.scrollBy({ left: direction * amount, behavior: "smooth" });
-  }
-
-  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      scrollByPage(1);
-    }
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      scrollByPage(-1);
-    }
-  }
+    emblaApi?.reInit({ duration: reduceMotion ? 0 : 22 });
+  }, [emblaApi, reduceMotion]);
 
   return (
     <div className="relative">
       <div
-        ref={trackRef}
         className="featured-products-track"
-        tabIndex={0}
+        ref={emblaRef}
         role="region"
         aria-roledescription="carrossel"
         aria-label="Produtos em destaque"
-        onKeyDown={handleKeyDown}
       >
-        {products.map((product) => (
-          <div key={product.id} className="featured-products-slide">
-            <ProductCard product={product} />
-          </div>
-        ))}
+        <div>
+          {products.map((product) => (
+            <div key={product.id} className="featured-products-slide">
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
       </div>
 
       <button
@@ -96,19 +86,18 @@ export function FeaturedProductsCarousel({
         className="featured-products-nav featured-products-nav--prev"
         aria-label="Produtos anteriores"
         disabled={!canPrev}
-        onClick={() => scrollByPage(-1)}
+        onClick={() => emblaApi?.scrollPrev()}
       >
-        <ArrowLeftIcon className="h-4 w-4" />
+        <ArrowLeftIcon className="h-5 w-5" />
       </button>
-
       <button
         type="button"
         className="featured-products-nav featured-products-nav--next"
         aria-label="Próximos produtos"
         disabled={!canNext}
-        onClick={() => scrollByPage(1)}
+        onClick={() => emblaApi?.scrollNext()}
       >
-        <ArrowRightIcon className="h-4 w-4" />
+        <ArrowRightIcon className="h-5 w-5" />
       </button>
     </div>
   );

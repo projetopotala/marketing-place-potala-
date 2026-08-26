@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, type ReactNode } from "react";
+import { Dialog, AlertDialog } from "radix-ui";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import styles from "./shared.module.css";
 
 interface AdminModalProps {
@@ -19,42 +21,48 @@ export function AdminModal({
   actions,
 }: AdminModalProps) {
   const titleId = useId();
-  const dialogRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const previous = document.activeElement as HTMLElement | null;
-    dialogRef.current?.querySelector<HTMLElement>("button, input, select, textarea")?.focus();
-
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      previous?.focus();
-    };
-  }, [open, onClose]);
-
-  if (!open) return null;
+  const reduceMotion = useReducedMotion();
 
   return (
-    <div className={styles.dialogBackdrop} role="presentation" onClick={onClose}>
-      <div
-        ref={dialogRef}
-        className={styles.dialog}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <h2 id={titleId} className={styles.dialogTitle}>
-          {title}
-        </h2>
-        <div className={styles.dialogBody}>{children}</div>
-        {actions ? <div className={styles.dialogActions}>{actions}</div> : null}
-      </div>
-    </div>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+    >
+      <AnimatePresence>
+        {open ? (
+          <Dialog.Portal forceMount>
+            <Dialog.Overlay asChild>
+              <motion.div
+                className={styles.dialogBackdrop}
+                initial={reduceMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={reduceMotion ? undefined : { opacity: 0 }}
+                transition={{ duration: 0.18 }}
+              />
+            </Dialog.Overlay>
+            <Dialog.Content asChild aria-labelledby={titleId}>
+              <motion.div
+                className={styles.dialog}
+                initial={reduceMotion ? false : { opacity: 0, scale: 0.98, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+              >
+                <Dialog.Title id={titleId} className={styles.dialogTitle}>
+                  {title}
+                </Dialog.Title>
+                <div className={styles.dialogBody}>{children}</div>
+                {actions ? (
+                  <div className={styles.dialogActions}>{actions}</div>
+                ) : null}
+              </motion.div>
+            </Dialog.Content>
+          </Dialog.Portal>
+        ) : null}
+      </AnimatePresence>
+    </Dialog.Root>
   );
 }
 
@@ -76,28 +84,41 @@ export function AdminConfirmDialog({
   onClose: () => void;
 }) {
   return (
-    <AdminModal
+    <AlertDialog.Root
       open={open}
-      title={title}
-      onClose={onClose}
-      actions={
-        <>
-          <button type="button" className={styles.btnGhost} onClick={onClose}>
-            Cancelar
-          </button>
-          <button
-            type="button"
-            className={styles.btnDanger}
-            disabled={busy}
-            onClick={onConfirm}
-          >
-            {confirmLabel}
-          </button>
-        </>
-      }
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
     >
-      <p>{description}</p>
-    </AdminModal>
+      <AlertDialog.Portal>
+        <AlertDialog.Overlay className={styles.dialogBackdrop} />
+        <AlertDialog.Content className={styles.dialog}>
+          <AlertDialog.Title className={styles.dialogTitle}>
+            {title}
+          </AlertDialog.Title>
+          <AlertDialog.Description className={styles.dialogBody}>
+            {description}
+          </AlertDialog.Description>
+          <div className={styles.dialogActions}>
+            <AlertDialog.Cancel asChild>
+              <button type="button" className={styles.btnGhost} onClick={onClose}>
+                Cancelar
+              </button>
+            </AlertDialog.Cancel>
+            <AlertDialog.Action asChild>
+              <button
+                type="button"
+                className={styles.btnDanger}
+                disabled={busy}
+                onClick={onConfirm}
+              >
+                {confirmLabel}
+              </button>
+            </AlertDialog.Action>
+          </div>
+        </AlertDialog.Content>
+      </AlertDialog.Portal>
+    </AlertDialog.Root>
   );
 }
 
@@ -113,42 +134,62 @@ export function AdminDrawer({
   onClose: () => void;
 }) {
   const titleId = useId();
+  const reduceMotion = useReducedMotion();
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (!open) return;
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  if (!open) return null;
+    if (open) closeRef.current?.focus();
+  }, [open]);
 
   return (
-    <>
-      <button
-        type="button"
-        className={styles.drawerBackdrop}
-        aria-label="Fechar painel"
-        onClick={onClose}
-      />
-      <aside
-        className={styles.drawer}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-      >
-        <div className={styles.header}>
-          <h2 id={titleId} className={styles.panelTitle}>
-            {title}
-          </h2>
-          <button type="button" className={styles.btnGhost} onClick={onClose}>
-            Fechar
-          </button>
-        </div>
-        {children}
-      </aside>
-    </>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+    >
+      <AnimatePresence>
+        {open ? (
+          <Dialog.Portal forceMount>
+            <Dialog.Overlay asChild>
+              <motion.button
+                type="button"
+                className={styles.drawerBackdrop}
+                aria-label="Fechar painel"
+                initial={reduceMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={reduceMotion ? undefined : { opacity: 0 }}
+              />
+            </Dialog.Overlay>
+            <Dialog.Content asChild aria-labelledby={titleId}>
+              <motion.aside
+                className={styles.drawer}
+                initial={reduceMotion ? false : { x: 24, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={reduceMotion ? undefined : { x: 24, opacity: 0 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+              >
+                <div className={styles.header}>
+                  <Dialog.Title id={titleId} className={styles.panelTitle}>
+                    {title}
+                  </Dialog.Title>
+                  <Dialog.Close asChild>
+                    <button
+                      ref={closeRef}
+                      type="button"
+                      className={styles.btnGhost}
+                      onClick={onClose}
+                    >
+                      Fechar
+                    </button>
+                  </Dialog.Close>
+                </div>
+                {children}
+              </motion.aside>
+            </Dialog.Content>
+          </Dialog.Portal>
+        ) : null}
+      </AnimatePresence>
+    </Dialog.Root>
   );
 }

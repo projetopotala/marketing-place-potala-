@@ -2,6 +2,14 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import {
+  ChartNoAxesCombined,
+  Package,
+  ShoppingBag,
+  Store,
+  Truck,
+  WalletCards,
+} from "lucide-react";
 import { useAdminData } from "@/features/admin/hooks/useAdminData";
 import {
   selectAlerts,
@@ -20,11 +28,22 @@ import {
 } from "@/features/admin/domain/status";
 import { formatMoney } from "@/features/admin/utils/currency";
 import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
-import { AdminMetricCard, AdminMetricsRow } from "@/components/admin/shared/AdminMetricCard";
+import {
+  AdminMetricCard,
+} from "@/components/admin/shared/AdminMetricCard";
 import { AdminStatusBadge } from "@/components/admin/shared/AdminStatusBadge";
 import { sharedStyles } from "@/components/admin/shared/AdminDataTable";
+import { SalesPerformanceChart } from "@/components/admin/charts/SalesPerformanceChart";
+import { SalesByCategoryChart } from "@/components/admin/charts/SalesByCategoryChart";
+import { MarketplaceGrowthChart } from "@/components/admin/charts/MarketplaceGrowthChart";
+import { FadeIn } from "@/components/ui/motion/FadeIn";
+import {
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/ui/motion/StaggerContainer";
 import adminStyles from "@/components/admin/admin.module.css";
 import type { SellerStatus } from "@/features/admin/domain/types";
+import type { LucideIcon } from "lucide-react";
 
 function sellerTone(status: SellerStatus) {
   if (status === "active") return "success" as const;
@@ -32,6 +51,15 @@ function sellerTone(status: SellerStatus) {
   if (status === "suspended") return "danger" as const;
   return "muted" as const;
 }
+
+const METRIC_ICONS: Record<string, LucideIcon> = {
+  sellers: Store,
+  products: Package,
+  "orders-today": ShoppingBag,
+  "sales-month": ChartNoAxesCombined,
+  revenue: WalletCards,
+  shipments: Truck,
+};
 
 export function DashboardView() {
   const { db, isHydrated } = useAdminData();
@@ -51,62 +79,30 @@ export function DashboardView() {
     return <div className={sharedStyles.skeleton} aria-busy="true" />;
   }
 
-  const maxRevenue = Math.max(...sales.map((p) => p.revenueCents), 1);
-  const maxOrders = Math.max(...sales.map((p) => p.orders), 1);
-  const width = 640;
-  const height = 220;
-  const pad = { top: 16, right: 16, bottom: 36, left: 44 };
-  const innerW = width - pad.left - pad.right;
-  const innerH = height - pad.top - pad.bottom;
-  const barWidth = innerW / Math.max(sales.length, 1) / 1.8;
-  const totalCategory = categories.reduce((sum, c) => sum + c.value, 0) || 1;
-  const segments = categories.reduce<
-    Array<(typeof categories)[number] & { start: number; end: number }>
-  >((acc, item) => {
-    const start = acc.length > 0 ? acc[acc.length - 1].end : 0;
-    const pct = (item.value / totalCategory) * 100;
-    acc.push({ ...item, start, end: start + pct });
-    return acc;
-  }, []);
-  const gradient =
-    segments.length > 0
-      ? segments.map((s) => `${s.color} ${s.start}% ${s.end}%`).join(", ")
-      : "var(--admin-elevated) 0% 100%";
-
-  const growthPoints = sales.map((point, index) => {
-    const x = pad.left + (index + 0.5) * (innerW / Math.max(sales.length, 1));
-    const y = pad.top + innerH - (point.orders / maxOrders) * innerH * 0.85;
-    return `${x},${y}`;
-  });
-
   return (
     <div className={sharedStyles.stack}>
-      <AdminPageHeader
-        title="Painel do Marketplace"
-        description="Visão geral e controle completo do seu ecossistema espiritual"
-        icon={
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M4 19V5m0 14h16M7 15l3.5-4 2.5 2.5L17 8"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        }
-      />
+      <FadeIn>
+        <AdminPageHeader
+          title="Painel do Marketplace"
+          description="Visão geral e controle completo do seu ecossistema espiritual"
+          icon={
+            <ChartNoAxesCombined size={18} strokeWidth={1.75} aria-hidden="true" />
+          }
+        />
+      </FadeIn>
 
-      <AdminMetricsRow>
+      <StaggerContainer className={sharedStyles.metrics}>
         {metrics.map((metric) => (
-          <AdminMetricCard
-            key={metric.id}
-            label={metric.label}
-            value={metric.value}
-            hint={metric.hint}
-          />
+          <StaggerItem key={metric.id}>
+            <AdminMetricCard
+              label={metric.label}
+              value={metric.value}
+              hint={metric.hint}
+              icon={METRIC_ICONS[metric.id]}
+            />
+          </StaggerItem>
         ))}
-      </AdminMetricsRow>
+      </StaggerContainer>
 
       <section className={adminStyles.chartsRow} aria-label="Gráficos">
         <div className={adminStyles.panel}>
@@ -126,130 +122,21 @@ export function DashboardView() {
               </select>
             </label>
           </div>
-          <svg
-            className={adminStyles.chartSvg}
-            viewBox={`0 0 ${width} ${height}`}
-            role="img"
-            aria-label="Gráfico de receita e pedidos"
-          >
-            {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
-              const y = pad.top + innerH * (1 - ratio);
-              return (
-                <line
-                  key={ratio}
-                  x1={pad.left}
-                  x2={width - pad.right}
-                  y1={y}
-                  y2={y}
-                  stroke="rgba(145,162,184,0.18)"
-                />
-              );
-            })}
-            {sales.map((point, index) => {
-              const xCenter =
-                pad.left + (index + 0.5) * (innerW / Math.max(sales.length, 1));
-              const barH = (point.revenueCents / maxRevenue) * innerH;
-              const y = pad.top + innerH - barH;
-              return (
-                <g key={`${point.label}-${index}`}>
-                  <rect
-                    x={xCenter - barWidth / 2}
-                    y={y}
-                    width={barWidth}
-                    height={barH}
-                    rx="4"
-                    fill="rgba(110, 168, 216, 0.78)"
-                  />
-                  <text
-                    x={xCenter}
-                    y={height - 12}
-                    textAnchor="middle"
-                    fill="#91a2b8"
-                    fontSize="11"
-                  >
-                    {point.label}
-                  </text>
-                </g>
-              );
-            })}
-            <polyline
-              points={growthPoints.join(" ")}
-              fill="none"
-              stroke="#d5a64f"
-              strokeWidth="2.5"
-            />
-          </svg>
-          <div className={adminStyles.legend}>
-            <span className={adminStyles.legendItem}>
-              <span className={adminStyles.swatchBar} /> Receita
-            </span>
-            <span className={adminStyles.legendItem}>
-              <span className={adminStyles.swatchLine} /> Pedidos
-            </span>
-          </div>
+          <SalesPerformanceChart data={sales} />
         </div>
 
         <div className={adminStyles.panel}>
           <div className={adminStyles.panelHead}>
             <h2 className={adminStyles.panelTitle}>Vendas por Categoria</h2>
           </div>
-          <div className={adminStyles.donutWrap}>
-            <div
-              className={adminStyles.donut}
-              style={{ background: `conic-gradient(${gradient})` }}
-              role="img"
-              aria-label="Distribuição por categoria"
-            >
-              <div className={adminStyles.donutHole}>
-                <span className={adminStyles.donutTotalLabel}>Total</span>
-                <span className={adminStyles.donutTotal}>
-                  {formatMoney(totalCategory)}
-                </span>
-              </div>
-            </div>
-            <ul className={adminStyles.catLegend}>
-              {categories.map((item) => (
-                <li key={item.id} className={adminStyles.catRow}>
-                  <span
-                    className={adminStyles.catDot}
-                    style={{ background: item.color }}
-                  />
-                  <span className={adminStyles.catLabel}>{item.label}</span>
-                  <span className={adminStyles.catValue}>
-                    {formatMoney(item.value)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <SalesByCategoryChart data={categories} />
         </div>
 
         <div className={adminStyles.panel}>
           <div className={adminStyles.panelHead}>
             <h2 className={adminStyles.panelTitle}>Crescimento do marketplace</h2>
           </div>
-          <svg
-            className={adminStyles.chartSvg}
-            viewBox="0 0 320 160"
-            role="img"
-            aria-label="Linha de crescimento de pedidos"
-          >
-            <polyline
-              points={growthPoints
-                .map((pair, index) => {
-                  const [, y] = pair.split(",");
-                  const x = 20 + index * (280 / Math.max(growthPoints.length - 1, 1));
-                  return `${x},${Number(y) * 0.6}`;
-                })
-                .join(" ")}
-              fill="none"
-              stroke="#d5a64f"
-              strokeWidth="2.5"
-            />
-          </svg>
-          <p className={adminStyles.pageSubtitle}>
-            Tendência de pedidos no período selecionado (dados demonstrativos).
-          </p>
+          <MarketplaceGrowthChart data={sales} />
         </div>
       </section>
 

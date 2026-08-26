@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ArrowRightIcon } from "@/components/storefront/icons";
+import { FadeIn } from "@/components/ui/motion/FadeIn";
 
 export function HeroSection() {
   return (
@@ -25,7 +26,7 @@ export function HeroSection() {
       />
 
       <div className="potala-wide-container relative flex min-h-[26rem] items-center py-8 md:min-h-[26.25rem] md:py-0">
-        <div className="w-full max-w-[42.5rem] lg:max-w-[44rem]">
+        <FadeIn className="w-full max-w-[42.5rem] lg:max-w-[44rem]">
           <h1
             id="hero-title"
             className="font-serif text-[2.5rem] font-medium leading-[1.04] tracking-tight text-potala-text sm:text-[2.75rem] md:text-[clamp(3.25rem,3.45vw,3.75rem)]"
@@ -56,7 +57,7 @@ export function HeroSection() {
               <ArrowRightIcon className="h-4 w-4" />
             </a>
           </div>
-        </div>
+        </FadeIn>
       </div>
     </section>
   );

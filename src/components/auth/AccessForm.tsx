@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { AccessMode } from "@/types/auth";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { RegisterForm } from "@/components/auth/RegisterForm";
@@ -18,8 +19,11 @@ export function AccessForm() {
   const mode = resolveMode(searchParams.get("modo"));
   const [prefillEmail, setPrefillEmail] = useState("");
   const [bannerMessage, setBannerMessage] = useState<string | null>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
+    shellRef.current?.setAttribute("data-access-hydrated", "true");
     const frame = window.requestAnimationFrame(() => {
       document.getElementById("access-title")?.focus();
     });
@@ -39,25 +43,35 @@ export function AccessForm() {
   }
 
   return (
-    <div className={styles.shell}>
-      <div
-        className={`${styles.card} ${mode === "register" ? styles.register : ""}`}
-        key={mode}
-      >
-        {mode === "login" ? (
-          <LoginForm
-            key={`login-${prefillEmail}-${bannerMessage ?? "none"}`}
-            initialEmail={prefillEmail}
-            bannerMessage={bannerMessage}
-            onCreateAccount={() => {
-              setBannerMessage(null);
-              goToMode("register");
-            }}
-          />
-        ) : (
-          <RegisterForm onBackToLogin={handleBackToLogin} />
-        )}
-      </div>
+    <div
+      ref={shellRef}
+      className={styles.shell}
+      data-access-hydrated="false"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          className={`${styles.card} ${mode === "register" ? styles.register : ""}`}
+          key={mode}
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+        >
+          {mode === "login" ? (
+            <LoginForm
+              key={`login-${prefillEmail}-${bannerMessage ?? "none"}`}
+              initialEmail={prefillEmail}
+              bannerMessage={bannerMessage}
+              onCreateAccount={() => {
+                setBannerMessage(null);
+                goToMode("register");
+              }}
+            />
+          ) : (
+            <RegisterForm onBackToLogin={handleBackToLogin} />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

@@ -46,7 +46,7 @@ export function PasswordField({
           type="button"
           className={styles.toggle}
           onClick={() => setVisible((current) => !current)}
-          aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
+          aria-label={visible ? "Ocultar caracteres" : "Mostrar caracteres"}
         >
           {visible ? "Ocultar" : "Mostrar"}
         </button>

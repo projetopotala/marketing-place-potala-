@@ -1,21 +1,57 @@
 @import "tailwindcss";
 
 :root {
-  --potala-bg: #041126;
-  --potala-bg-secondary: #071a32;
-  --potala-panel: #0b1e38;
-  --potala-gold: #d5a54f;
-  --potala-gold-light: #e9bb64;
-  --potala-cream: #f3ecdf;
-  --potala-text: #f5f1e8;
-  --potala-text-muted: #9ca8b7;
-  --potala-border: rgb(213 165 79 / 22%);
-  --potala-border-strong: rgb(213 165 79 / 45%);
-  --potala-shadow: 0 18px 40px rgb(0 0 0 / 28%);
-  --potala-radius: 0.75rem;
-  --potala-radius-control: 0.5rem;
-  --potala-radius-button: 0.375rem;
-  --potala-container-max: 87.5rem;
+  /* Escala navy / dourado — fonte única Potala */
+  --potala-navy-950: #041020;
+  --potala-navy-900: #041126;
+  --potala-navy-850: #061426;
+  --potala-navy-800: #0b1d33;
+  --potala-navy-750: #10243d;
+  --potala-navy-700: #071a32;
+
+  --potala-gold-500: #d5a64f;
+  --potala-gold-400: #e8c878;
+
+  --potala-text-primary: #f5efe2;
+  --potala-text-secondary: #91a2b8;
+
+  --potala-border: rgba(210, 165, 80, 0.22);
+  --potala-border-strong: rgba(210, 165, 80, 0.45);
+
+  --potala-success: #65b96e;
+  --potala-warning: #d6a746;
+  --potala-danger: #c95c57;
+  --potala-info: #6ea8d8;
+
+  --font-display: var(--font-potala-serif);
+  --font-body: var(--font-potala-sans);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  --shadow-panel: 0 18px 40px rgb(0 0 0 / 28%);
+  --shadow-overlay: 0 20px 50px rgba(0, 0, 0, 0.45);
+
+  --content-max: 87.5rem;
+  --account-content-max: 87.5rem; /* ~1400px */
+  --admin-sidebar-width: 240px;
+  --admin-topbar-height: 72px;
+
+  /* Aliases legados (storefront / conta) */
+  --potala-bg: var(--potala-navy-900);
+  --potala-bg-secondary: var(--potala-navy-700);
+  --potala-panel: var(--potala-navy-800);
+  --potala-gold: var(--potala-gold-500);
+  --potala-gold-light: var(--potala-gold-400);
+  --potala-cream: var(--potala-text-primary);
+  --potala-text: var(--potala-text-primary);
+  --potala-text-muted: var(--potala-text-secondary);
+  --potala-shadow: var(--shadow-panel);
+  --potala-radius: var(--radius-lg);
+  --potala-radius-control: var(--radius-md);
+  --potala-radius-button: var(--radius-sm);
+  --potala-container-max: var(--content-max);
   --background: var(--potala-bg);
   --foreground: var(--potala-text);
 }
@@ -398,46 +434,45 @@ img {
 }
 
 .featured-products-track {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 82%;
-  gap: 0.875rem;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  overflow: hidden;
   padding-block: 0.15rem;
 }
 
-.featured-products-track::-webkit-scrollbar {
-  display: none;
+.featured-products-track > div {
+  display: flex;
+  gap: 0.875rem;
+  touch-action: pan-y pinch-zoom;
 }
 
 .featured-products-slide {
-  scroll-snap-align: start;
   min-width: 0;
+  flex: 0 0 82%;
   height: 100%;
 }
 
 @media (min-width: 640px) {
-  .featured-products-track {
-    grid-auto-columns: calc((100% - 1rem) / 2);
+  .featured-products-track > div {
     gap: 1rem;
+  }
+
+  .featured-products-slide {
+    flex-basis: calc((100% - 1rem) / 2);
   }
 }
 
-@media (min-width: 900px) {
-  .featured-products-track {
-    grid-auto-columns: calc((100% - 2rem) / 3);
+@media (min-width: 1024px) {
+  .featured-products-slide {
+    flex-basis: calc((100% - 2rem) / 3);
   }
 }
 
 @media (min-width: 1280px) {
-  .featured-products-track {
-    grid-auto-columns: calc((100% - 3.5rem) / 5);
+  .featured-products-track > div {
     gap: 0.875rem;
+  }
+
+  .featured-products-slide {
+    flex-basis: calc((100% - 3.5rem) / 5);
   }
 }
 
@@ -527,7 +562,7 @@ img {
   display: none;
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 1024px) {
   .discovery-divider {
     display: block;
     width: 1px;
@@ -537,7 +572,7 @@ img {
   }
 }
 
-@media (max-width: 1179px) {
+@media (max-width: 1023px) {
   .discovery-group:not(:first-child) {
     padding-top: 2.25rem;
     border-top: 1px solid rgb(213 165 79 / 22%);
@@ -1119,7 +1154,7 @@ img {
   color: rgb(245 241 232 / 88%);
 }
 
-@media (max-width: 1199px) {
+@media (max-width: 1023px) {
   .newsletter-section {
     background-position: left 30% center;
     background-size: auto 120%;

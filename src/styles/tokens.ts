@@ -1,0 +1,20 @@
+/** Tokens JS alinhados a globals.css — uso em Recharts e estilos dinâmicos. */
+export const POTALA_TOKENS = {
+  navy950: "#041020",
+  navy900: "#041126",
+  navy850: "#061426",
+  navy800: "#0b1d33",
+  navy750: "#10243d",
+  gold500: "#d5a64f",
+  gold400: "#e8c878",
+  textPrimary: "#f5efe2",
+  textSecondary: "#91a2b8",
+  border: "rgba(210, 165, 80, 0.22)",
+  success: "#65b96e",
+  warning: "#d6a746",
+  danger: "#c95c57",
+  info: "#6ea8d8",
+  purple: "#9b7ed8",
+  orange: "#d98952",
+  grid: "rgba(145, 162, 184, 0.14)",
+} as const;

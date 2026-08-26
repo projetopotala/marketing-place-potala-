@@ -1,6 +1,193 @@
 import type { SVGProps } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChevronDown,
+  Clock,
+  Heart,
+  Mail,
+  Menu,
+  Minus,
+  Plus,
+  Search,
+  ShoppingCart,
+  Star,
+  Truck,
+  UserRound,
+  X,
+  ShieldCheck,
+} from "lucide-react";
 
-type IconProps = SVGProps<SVGSVGElement>;
+type IconProps = SVGProps<SVGSVGElement> & {
+  size?: number | string;
+};
+
+function lucideSize(props: IconProps): number {
+  if (typeof props.size === "number") return props.size;
+  if (typeof props.width === "number") return props.width;
+  return 20;
+}
+
+/** Ícones funcionais via Lucide — identidade/marca permanece em SVG próprio abaixo. */
+
+export function SearchIcon({ className, ...props }: IconProps) {
+  return (
+    <Search
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function UserIcon({ className, ...props }: IconProps) {
+  return (
+    <UserRound
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function CartIcon({ className, ...props }: IconProps) {
+  return (
+    <ShoppingCart
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function TruckIcon({ className, ...props }: IconProps) {
+  return (
+    <Truck
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function MenuIcon({ className, ...props }: IconProps) {
+  return (
+    <Menu
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function CloseIcon({ className, ...props }: IconProps) {
+  return (
+    <X
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function ChevronDownIcon({ className, ...props }: IconProps) {
+  return (
+    <ChevronDown
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function ArrowRightIcon({ className, ...props }: IconProps) {
+  return (
+    <ArrowRight
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function ArrowLeftIcon({ className, ...props }: IconProps) {
+  return (
+    <ArrowLeft
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function StarIcon({
+  filled = true,
+  className,
+  ...props
+}: IconProps & { filled?: boolean }) {
+  return (
+    <Star
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={filled ? 0 : 1.6}
+      fill={filled ? "currentColor" : "none"}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function HeartIcon({ className, ...props }: IconProps) {
+  return (
+    <Heart
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function PlusIcon({ className, ...props }: IconProps) {
+  return (
+    <Plus
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function MinusIcon({ className, ...props }: IconProps) {
+  return (
+    <Minus
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
+
+export function ShieldIcon({ className, ...props }: IconProps) {
+  return (
+    <ShieldCheck
+      className={className}
+      size={lucideSize(props)}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
+  );
+}
 
 function baseProps(props: IconProps): IconProps {
   return {
@@ -15,97 +202,6 @@ function baseProps(props: IconProps): IconProps {
     "aria-hidden": true,
     ...props,
   };
-}
-
-export function SearchIcon(props: IconProps) {
-  return (
-    <svg {...baseProps(props)}>
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-3.5-3.5" />
-    </svg>
-  );
-}
-
-export function UserIcon(props: IconProps) {
-  return (
-    <svg {...baseProps(props)}>
-      <circle cx="12" cy="8" r="3.5" />
-      <path d="M5 19.5c1.8-3.2 4.2-4.5 7-4.5s5.2 1.3 7 4.5" />
-    </svg>
-  );
-}
-
-export function CartIcon(props: IconProps) {
-  return (
-    <svg {...baseProps(props)}>
-      <path d="M4 6h2l1.2 10.2a2 2 0 0 0 2 1.8h7.6a2 2 0 0 0 2-1.7L20 9H8" />
-      <circle cx="10" cy="20" r="1.2" />
-      <circle cx="17" cy="20" r="1.2" />
-    </svg>
-  );
-}
-
-export function TruckIcon(props: IconProps) {
-  return (
-    <svg {...baseProps(props)}>
-      <path d="M3 8h11v9H3V8Z" />
-      <path d="M14 11h4.2L21 14.2V17h-7v-6Z" />
-      <circle cx="7" cy="18.5" r="1.5" />
-      <circle cx="17.5" cy="18.5" r="1.5" />
-    </svg>
-  );
-}
-
-export function MenuIcon(props: IconProps) {
-  return (
-    <svg {...baseProps(props)}>
-      <path d="M4 7h16M4 12h16M4 17h16" />
-    </svg>
-  );
-}
-
-export function CloseIcon(props: IconProps) {
-  return (
-    <svg {...baseProps(props)}>
-      <path d="M6 6l12 12M18 6 6 18" />
-    </svg>
-  );
-}
-
-export function ChevronDownIcon(props: IconProps) {
-  return (
-    <svg {...baseProps(props)}>
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-export function ArrowRightIcon(props: IconProps) {
-  return (
-    <svg {...baseProps(props)}>
-      <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
-  );
-}
-
-export function ArrowLeftIcon(props: IconProps) {
-  return (
-    <svg {...baseProps(props)}>
-      <path d="M19 12H5M11 6l-6 6 6 6" />
-    </svg>
-  );
-}
-
-export function StarIcon({ filled = true, ...props }: IconProps & { filled?: boolean }) {
-  return (
-    <svg
-      {...baseProps(props)}
-      fill={filled ? "currentColor" : "none"}
-      strokeWidth={filled ? 0 : 1.6}
-    >
-      <path d="m12 3.5 2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.9 7.2 18.4l.9-5.4-3.9-3.8 5.4-.8L12 3.5Z" />
-    </svg>
-  );
 }
 
 export function InstagramIcon(props: IconProps) {
@@ -242,12 +338,14 @@ export function FirstLaunchIcon(props: IconProps) {
   );
 }
 
-export function PrivacyShieldIcon(props: IconProps) {
+export function PrivacyShieldIcon({ className, ...props }: IconProps) {
   return (
-    <svg {...baseProps({ width: 16, height: 16, ...props })}>
-      <path d="M12 3.5 5.5 5.8v5c0 3.2 2.5 5.5 6.5 7 4-1.5 6.5-3.8 6.5-7v-5L12 3.5Z" />
-      <path d="m9.2 11.2 1.8 1.8 3.6-3.7" />
-    </svg>
+    <ShieldCheck
+      className={className}
+      size={lucideSize({ ...props, size: props.size ?? 16 })}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
   );
 }
 
@@ -260,20 +358,24 @@ export function WhatsAppIcon(props: IconProps) {
   );
 }
 
-export function MailIcon(props: IconProps) {
+export function MailIcon({ className, ...props }: IconProps) {
   return (
-    <svg {...baseProps({ width: 18, height: 18, ...props })}>
-      <rect x="3.5" y="6" width="17" height="12" rx="1.5" />
-      <path d="m5 8.5 7.5 5.2L20 8.5" />
-    </svg>
+    <Mail
+      className={className}
+      size={lucideSize({ ...props, size: props.size ?? 18 })}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
   );
 }
 
-export function ClockIcon(props: IconProps) {
+export function ClockIcon({ className, ...props }: IconProps) {
   return (
-    <svg {...baseProps({ width: 18, height: 18, ...props })}>
-      <circle cx="12" cy="12" r="7.5" />
-      <path d="M12 8.5V12l2.5 2" />
-    </svg>
+    <Clock
+      className={className}
+      size={lucideSize({ ...props, size: props.size ?? 18 })}
+      strokeWidth={1.6}
+      aria-hidden="true"
+    />
   );
 }

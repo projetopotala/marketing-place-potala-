@@ -25,36 +25,73 @@
 
 .link,
 .disabled {
-  display: grid;
-  gap: 0.1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  width: 100%;
+  text-align: left;
   min-height: 2.75rem;
   padding: 0.65rem 0.7rem;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-md);
   font-size: 0.88rem;
+  border: 0;
+  background: transparent;
 }
 
 .link {
-  color: var(--potala-cream);
+  color: var(--potala-text-primary);
 }
 
 .link:hover,
 .active {
   background: rgb(213 165 79 / 10%);
-  color: var(--potala-gold-light);
+  color: var(--potala-gold-400);
+  box-shadow: inset 3px 0 0 var(--potala-gold-500);
 }
 
-.link:focus-visible {
-  outline: 2px solid var(--potala-gold-light);
-  outline-offset: 2px;
+.link span,
+.disabled span {
+  display: grid;
+  gap: 0.1rem;
 }
 
 .disabled {
-  color: var(--potala-text-muted);
+  color: var(--potala-text-secondary);
+  cursor: pointer;
 }
 
 .disabled small {
   font-size: 0.7rem;
   color: rgb(156 168 183 / 80%);
+}
+
+.support {
+  border: 1px dashed var(--potala-border);
+  background: transparent;
+  color: var(--potala-text-secondary);
+  cursor: pointer;
+}
+
+.support:hover {
+  border-color: var(--potala-gold-500);
+  color: var(--potala-gold-400);
+}
+
+.logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid var(--potala-border);
+  background: transparent;
+  color: var(--potala-gold-500);
+  cursor: pointer;
+}
+
+.status {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--potala-gold-400);
 }
 
 .help {
@@ -81,30 +118,18 @@
 .support,
 .logout {
   min-height: 2.75rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius-sm);
   font-size: 0.85rem;
   font-weight: 600;
 }
 
-.support {
-  border: 1px dashed var(--potala-border);
-  background: transparent;
-  color: var(--potala-text-muted);
-  cursor: not-allowed;
-}
-
-.logout {
-  border: 1px solid var(--potala-border);
-  background: transparent;
-  color: var(--potala-gold);
-  cursor: pointer;
-}
-
 .logout:hover {
-  border-color: var(--potala-gold);
+  border-color: var(--potala-gold-500);
 }
 
-.logout:focus-visible {
-  outline: 2px solid var(--potala-gold-light);
+.logout:focus-visible,
+.support:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--potala-gold-400);
   outline-offset: 2px;
 }

@@ -13,6 +13,8 @@ import {
 import { sharedStyles } from "@/components/admin/shared/AdminDataTable";
 import { AdminFilterBar, Field } from "@/components/admin/shared/AdminStatusBadge";
 import { useAdminToast } from "@/components/admin/shared/AdminToastProvider";
+import { ReportChart } from "@/components/admin/charts/ReportChart";
+import { ChartNoAxesCombined } from "lucide-react";
 import moduleStyles from "./modules.module.css";
 
 const KINDS: Array<{ value: ReportKind; label: string }> = [
@@ -56,8 +58,6 @@ export function ReportsView() {
     });
   }, [report.rows]);
 
-  const maxChart = Math.max(...chartValues.map((c) => c.value), 1);
-
   function exportCsv() {
     downloadCsv(
       `relatorio-${kind}.csv`,
@@ -75,6 +75,7 @@ export function ReportsView() {
       <AdminPageHeader
         title="Relatórios"
         description="Selecione o tipo, período e exporte com BOM para Excel."
+        icon={<ChartNoAxesCombined size={18} strokeWidth={1.75} aria-hidden="true" />}
         actions={
           <button type="button" className={sharedStyles.btnSecondary} onClick={exportCsv}>
             Exportar CSV
@@ -110,38 +111,8 @@ export function ReportsView() {
       </AdminMetricsRow>
 
       <div className={sharedStyles.panel}>
-        <h2 className={sharedStyles.panelTitle}>Distribuição (barras SVG)</h2>
-        <svg
-          viewBox="0 0 640 200"
-          role="img"
-          aria-label="Gráfico de barras do relatório"
-          style={{ width: "100%", height: "auto" }}
-        >
-          {chartValues.map((item, index) => {
-            const barW = 640 / Math.max(chartValues.length, 1) / 1.6;
-            const gap = 640 / Math.max(chartValues.length, 1);
-            const x = index * gap + (gap - barW) / 2;
-            const h = (item.value / maxChart) * 140;
-            const y = 160 - h;
-            return (
-              <g key={`${item.label}-${index}`}>
-                <rect x={x} y={y} width={barW} height={h} rx="4" fill="rgba(110,168,216,0.78)" />
-                <text
-                  x={x + barW / 2}
-                  y={180}
-                  textAnchor="middle"
-                  fill="#91a2b8"
-                  fontSize="10"
-                >
-                  {item.label.slice(0, 10)}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-        {chartValues.length === 0 ? (
-          <p className={moduleStyles.muted}>Sem dados no período.</p>
-        ) : null}
+        <h2 className={sharedStyles.panelTitle}>Distribuição</h2>
+        <ReportChart data={chartValues} />
       </div>
 
       <div className={sharedStyles.panel}>

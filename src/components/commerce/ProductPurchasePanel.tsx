@@ -8,6 +8,8 @@ import { useCart } from "@/context/CartContext";
 import {
   CartIcon,
   ClockIcon,
+  MinusIcon,
+  PlusIcon,
   StarIcon,
   TruckIcon,
 } from "@/components/storefront/icons";
@@ -96,7 +98,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             disabled={quantity <= 1}
             aria-label="Diminuir quantidade"
           >
-            −
+            <MinusIcon className="h-4 w-4" />
           </button>
           <input
             id={quantityId}
@@ -114,7 +116,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             disabled={quantity >= stock}
             aria-label="Aumentar quantidade"
           >
-            +
+            <PlusIcon className="h-4 w-4" />
           </button>
         </div>
       </div>

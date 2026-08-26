@@ -1,17 +1,17 @@
 .shell {
-  --admin-bg: #061426;
-  --admin-sidebar: #041020;
-  --admin-surface: #0b1d33;
-  --admin-elevated: #10243d;
-  --admin-border: rgba(210, 165, 80, 0.22);
-  --admin-gold: #d5a64f;
-  --admin-text: #f5efe2;
-  --admin-muted: #91a2b8;
-  --admin-success: #65b96e;
-  --admin-warning: #d6a746;
-  --admin-danger: #c95c57;
+  --admin-bg: var(--potala-navy-850);
+  --admin-sidebar: var(--potala-navy-950);
+  --admin-surface: var(--potala-navy-800);
+  --admin-elevated: var(--potala-navy-750);
+  --admin-border: var(--potala-border);
+  --admin-gold: var(--potala-gold-500);
+  --admin-text: var(--potala-text-primary);
+  --admin-muted: var(--potala-text-secondary);
+  --admin-success: var(--potala-success);
+  --admin-warning: var(--potala-warning);
+  --admin-danger: var(--potala-danger);
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-columns: var(--admin-sidebar-width, 240px) minmax(0, 1fr);
   min-height: 100dvh;
   background: var(--admin-bg);
   color: var(--admin-text);
@@ -146,6 +146,7 @@
   color: var(--admin-gold);
   font-weight: 600;
   cursor: default;
+  box-shadow: inset 3px 0 0 var(--admin-gold);
 }
 
 .navLinkActive {
@@ -159,8 +160,17 @@
   margin-top: 2px;
 }
 
+.navLinkInner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
 .navSubLink {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 12px 8px 22px;
   border-radius: 8px;
   color: var(--admin-muted);
@@ -418,13 +428,20 @@
 
 .adminChip {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid var(--admin-border);
   background: var(--admin-surface);
+}
+
+.adminChipText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
 }
 
 .adminName {
@@ -451,6 +468,9 @@
   font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .topLogout:hover {
@@ -958,7 +978,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
   .shell {
     grid-template-columns: 1fr;
   }
@@ -969,7 +989,7 @@
     top: 0;
     transform: translateX(-105%);
     transition: transform 0.2s ease;
-    box-shadow: 8px 0 28px rgba(0, 0, 0, 0.45);
+    box-shadow: var(--shadow-overlay);
   }
 
   .sidebarOpen {

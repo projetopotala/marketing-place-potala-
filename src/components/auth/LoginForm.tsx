@@ -26,8 +26,7 @@ export function LoginForm({
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function attemptSignIn() {
     setError(null);
 
     const result = signIn({ email, password, remember });
@@ -37,6 +36,11 @@ export function LoginForm({
     }
 
     router.push(result.role === "admin" ? "/admin" : "/minha-conta");
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    attemptSignIn();
   }
 
   return (
@@ -88,7 +92,12 @@ export function LoginForm({
           Lembrar de mim
         </label>
 
-        <button type="submit" className={styles.primary}>
+        {/* type=button evita submit nativo antes da hidratação (URL /acesso?). */}
+        <button
+          type="button"
+          className={styles.primary}
+          onClick={attemptSignIn}
+        >
           Entrar
         </button>
 

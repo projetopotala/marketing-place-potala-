@@ -25,6 +25,9 @@ import {
   Field,
 } from "@/components/admin/shared/AdminStatusBadge";
 import { useAdminToast } from "@/components/admin/shared/AdminToastProvider";
+import { PaymentMethodsChart } from "@/components/admin/charts/PaymentMethodsChart";
+import { FinanceRevenueChart } from "@/components/admin/charts/FinanceRevenueChart";
+import { WalletCards } from "lucide-react";
 import moduleStyles from "./modules.module.css";
 
 export function FinanceView() {
@@ -66,6 +69,26 @@ export function FinanceView() {
       .sort((a, b) => b.net - a.net)
       .slice(0, 5);
   }, [db.transactions, sellerName]);
+
+  const revenueSeries = useMemo(() => {
+    const buckets = new Map<string, { grossCents: number; netCents: number }>();
+    for (const txn of db.transactions.filter((t) => t.paymentStatus === "approved")) {
+      const key = txn.createdAt.slice(0, 10);
+      const current = buckets.get(key) ?? { grossCents: 0, netCents: 0 };
+      current.grossCents += txn.grossCents;
+      current.netCents += txn.netCents;
+      buckets.set(key, current);
+    }
+    return [...buckets.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([iso, values]) => ({
+        label: new Date(iso).toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "short",
+        }),
+        ...values,
+      }));
+  }, [db.transactions]);
 
   const filtered = useMemo(() => {
     const list = db.transactions.filter((txn) => {
@@ -109,6 +132,7 @@ export function FinanceView() {
       <AdminPageHeader
         title="Financeiro"
         description="Resumo de receitas, métodos de pagamento e ranking de sellers."
+        icon={<WalletCards size={18} strokeWidth={1.75} aria-hidden="true" />}
         actions={
           <>
             <Link href="/admin/financeiro/integracoes" className={sharedStyles.btnGhost}>
@@ -133,35 +157,30 @@ export function FinanceView() {
 
       <div className={sharedStyles.grid2}>
         <div className={sharedStyles.panel}>
-          <h2 className={sharedStyles.panelTitle}>Métodos de pagamento</h2>
-          <ul className={moduleStyles.timeline}>
-            {methodBreakdown.map((item) => (
-              <li key={item.method} className={moduleStyles.timelineItem}>
-                <p className={moduleStyles.timelineLabel}>{item.method.toUpperCase()}</p>
-                <p className={moduleStyles.timelineDetail}>{formatMoney(item.value)}</p>
-              </li>
-            ))}
-            {methodBreakdown.length === 0 ? (
-              <li className={moduleStyles.muted}>Sem dados.</li>
-            ) : null}
-          </ul>
+          <h2 className={sharedStyles.panelTitle}>Evolução da receita</h2>
+          <FinanceRevenueChart data={revenueSeries} />
         </div>
         <div className={sharedStyles.panel}>
-          <h2 className={sharedStyles.panelTitle}>Ranking de vendedores</h2>
-          <ul className={moduleStyles.timeline}>
-            {sellerRanking.map((item) => (
-              <li key={item.sellerId} className={moduleStyles.timelineItem}>
-                <Link
-                  href={`/admin/vendedores/${item.sellerId}`}
-                  className={sharedStyles.linkBtn}
-                >
-                  {item.name}
-                </Link>
-                <p className={moduleStyles.timelineDetail}>{formatMoney(item.net)}</p>
-              </li>
-            ))}
-          </ul>
+          <h2 className={sharedStyles.panelTitle}>Métodos de pagamento</h2>
+          <PaymentMethodsChart data={methodBreakdown} />
         </div>
+      </div>
+
+      <div className={sharedStyles.panel}>
+        <h2 className={sharedStyles.panelTitle}>Ranking de vendedores</h2>
+        <ul className={moduleStyles.timeline}>
+          {sellerRanking.map((item) => (
+            <li key={item.sellerId} className={moduleStyles.timelineItem}>
+              <Link
+                href={`/admin/vendedores/${item.sellerId}`}
+                className={sharedStyles.linkBtn}
+              >
+                {item.name}
+              </Link>
+              <p className={moduleStyles.timelineDetail}>{formatMoney(item.net)}</p>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <AdminFilterBar>

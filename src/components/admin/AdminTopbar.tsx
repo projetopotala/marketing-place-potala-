@@ -8,13 +8,17 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import { useRouter } from "next/navigation";
+import { Menu, Search, LogOut, UserRound } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useAuth } from "@/context/AuthContext";
 import { useAdminData } from "@/features/admin/hooks/useAdminData";
 import { globalSearch } from "@/features/admin/selectors/dashboardSelectors";
+import { ADMIN_ICON_STROKE } from "@/components/admin/adminNav";
 import styles from "./admin.module.css";
 
 interface AdminTopbarProps {
   onOpenMenu: () => void;
+  menuOpen: boolean;
   menuButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
@@ -26,10 +30,15 @@ type SearchHit = {
   group: string;
 };
 
-export function AdminTopbar({ onOpenMenu, menuButtonRef }: AdminTopbarProps) {
+export function AdminTopbar({
+  onOpenMenu,
+  menuOpen,
+  menuButtonRef,
+}: AdminTopbarProps) {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const { db } = useAdminData();
+  const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -135,30 +144,15 @@ export function AdminTopbar({ onOpenMenu, menuButtonRef }: AdminTopbarProps) {
           className={styles.menuBtn}
           aria-label="Abrir menu administrativo"
           aria-controls="admin-sidebar"
-          aria-expanded={false}
+          aria-expanded={menuOpen}
           onClick={onOpenMenu}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M4 7h16M4 12h16M4 17h16"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-          </svg>
+          <Menu size={20} strokeWidth={ADMIN_ICON_STROKE} aria-hidden="true" />
         </button>
 
         <div className={styles.searchWrap}>
           <span className={styles.searchIcon} aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
-              <path
-                d="M20 20l-3.5-3.5"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-            </svg>
+            <Search size={16} strokeWidth={ADMIN_ICON_STROKE} />
           </span>
           <input
             ref={inputRef}
@@ -181,77 +175,93 @@ export function AdminTopbar({ onOpenMenu, menuButtonRef }: AdminTopbarProps) {
 
         <div className={styles.topbarRight}>
           <div className={styles.adminChip}>
-            <span className={styles.adminName}>{user?.name ?? "Administrador"}</span>
-            <span className={styles.adminRole}>Admin</span>
+            <UserRound size={16} strokeWidth={ADMIN_ICON_STROKE} aria-hidden="true" />
+            <span className={styles.adminChipText}>
+              <span className={styles.adminName}>{user?.name ?? "Administrador"}</span>
+              <span className={styles.adminRole}>Admin</span>
+            </span>
           </div>
           <button type="button" className={styles.topLogout} onClick={handleLogout}>
+            <LogOut size={16} strokeWidth={ADMIN_ICON_STROKE} aria-hidden="true" />
             Sair
           </button>
         </div>
       </header>
 
-      {open ? (
-        <div
-          className={styles.searchPalette}
-          role="presentation"
-          onClick={closePalette}
-        >
-          <div
-            className={styles.searchDialog}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Busca administrativa"
-            onClick={(event) => event.stopPropagation()}
+      <AnimatePresence>
+        {open ? (
+          <motion.div
+            className={styles.searchPalette}
+            role="presentation"
+            onClick={closePalette}
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0 }}
+            transition={{ duration: 0.18 }}
           >
-            <input
-              ref={dialogInputRef}
-              className={styles.searchDialogInput}
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setActiveIndex(0);
-              }}
-              onKeyDown={onDialogKeyDown}
-              placeholder="Buscar vendedores, produtos, pedidos, clientes..."
-              aria-label="Termo de busca"
-            />
-            {query.trim() && results.length === 0 ? (
-              <p className={styles.searchEmpty}>Nenhum resultado para “{query}”.</p>
-            ) : null}
-            {!query.trim() ? (
-              <p className={styles.searchEmpty}>
-                Digite para buscar em vendedores, produtos, pedidos, clientes e conteúdos.
-              </p>
-            ) : null}
-            {groups.map((group) => {
-              const items = results.filter((item) => item.group === group);
-              if (items.length === 0) return null;
-              return (
-                <div key={group} className={styles.searchGroup}>
-                  <p className={styles.searchGroupTitle}>{group}</p>
-                  {items.map((item) => {
-                    const index = results.findIndex((hit) => hit.id === item.id && hit.group === item.group);
-                    return (
-                      <button
-                        key={`${item.group}-${item.id}`}
-                        type="button"
-                        className={`${styles.searchResult} ${
-                          index === activeIndex ? styles.searchResultActive : ""
-                        }`}
-                        onClick={() => openResult(item.href)}
-                        onMouseEnter={() => setActiveIndex(index)}
-                      >
-                        <span>{item.label}</span>
-                        <span className={styles.searchResultMeta}>{item.meta}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
+            <motion.div
+              className={styles.searchDialog}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Busca administrativa"
+              onClick={(event) => event.stopPropagation()}
+              initial={reduceMotion ? false : { opacity: 0, scale: 0.98, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+            >
+              <input
+                ref={dialogInputRef}
+                className={styles.searchDialogInput}
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  setActiveIndex(0);
+                }}
+                onKeyDown={onDialogKeyDown}
+                placeholder="Buscar vendedores, produtos, pedidos, clientes..."
+                aria-label="Termo de busca"
+              />
+              {query.trim() && results.length === 0 ? (
+                <p className={styles.searchEmpty}>Nenhum resultado para “{query}”.</p>
+              ) : null}
+              {!query.trim() ? (
+                <p className={styles.searchEmpty}>
+                  Digite para buscar em vendedores, produtos, pedidos, clientes e conteúdos.
+                </p>
+              ) : null}
+              {groups.map((group) => {
+                const items = results.filter((item) => item.group === group);
+                if (items.length === 0) return null;
+                return (
+                  <div key={group} className={styles.searchGroup}>
+                    <p className={styles.searchGroupTitle}>{group}</p>
+                    {items.map((item) => {
+                      const index = results.findIndex(
+                        (hit) => hit.id === item.id && hit.group === item.group,
+                      );
+                      return (
+                        <button
+                          key={`${item.group}-${item.id}`}
+                          type="button"
+                          className={`${styles.searchResult} ${
+                            index === activeIndex ? styles.searchResultActive : ""
+                          }`}
+                          onClick={() => openResult(item.href)}
+                          onMouseEnter={() => setActiveIndex(index)}
+                        >
+                          <span>{item.label}</span>
+                          <span className={styles.searchResultMeta}>{item.meta}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }
