@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { DEMO_SESSION_STORAGE_KEY } from "../../src/types/auth";
+import { createAdminSeed } from "../../src/features/admin/data/seed";
 
 const PUBLIC_ROUTES = [
   "/",
@@ -8,6 +9,14 @@ const PUBLIC_ROUTES = [
   "/checkout",
   "/produto/japamala",
 ] as const;
+
+const ADMIN_SEED_SELLER = createAdminSeed().sellers.find(
+  (seller) => seller.id === "sel-1",
+);
+
+if (!ADMIN_SEED_SELLER) {
+  throw new Error("Seed administrativo sem vendedor sel-1.");
+}
 
 async function waitForAccessHydration(page: Page) {
   await page.goto("/acesso");
@@ -83,6 +92,53 @@ test.describe("área autenticada (demo)", () => {
       });
       expect(overflow).toBeFalsy();
     }
+  });
+
+  test("busca administrativa global com CommandDialog", async ({ page }) => {
+    await seedDemoSession(page, "admin");
+    await page.goto("/admin");
+    await expect(page.getByRole("heading", { name: /Painel/i })).toBeVisible();
+
+    const searchTrigger = page.getByRole("button", {
+      name: "Abrir busca administrativa",
+    });
+    const expectedRoute = `/admin/vendedores/${ADMIN_SEED_SELLER.id}`;
+    const searchTerm = "Ervas Sagradas";
+
+    await page.keyboard.press("Control+KeyK");
+    const searchDialog = page.getByRole("dialog", { name: "Busca administrativa" });
+    await expect(searchDialog).toBeVisible();
+
+    await page.keyboard.press("Control+KeyK");
+    await expect(searchDialog).toBeHidden();
+    await expect(searchTrigger).toBeFocused();
+
+    await page.keyboard.press("Control+KeyK");
+    await expect(searchDialog).toBeVisible();
+
+    const searchInput = page.getByRole("combobox", {
+      name: "Termo da busca administrativa",
+    });
+    await expect(searchInput).toBeFocused();
+    await searchInput.fill(searchTerm);
+
+    const result = searchDialog.getByRole("option", {
+      name: new RegExp(ADMIN_SEED_SELLER.name, "i"),
+    });
+    await expect(result).toBeVisible();
+    await page.keyboard.press("Enter");
+
+    await expect(page).toHaveURL(
+      new RegExp(expectedRoute.replace(/\//g, "\\/")),
+    );
+
+    await page.goto("/admin");
+    await expect(searchTrigger).toBeVisible();
+    await searchTrigger.click();
+    await expect(searchDialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(searchDialog).toBeHidden();
+    await expect(searchTrigger).toBeFocused();
   });
 
   test("minha-conta com cliente", async ({ page }) => {
