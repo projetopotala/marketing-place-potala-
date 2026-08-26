@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   /* Escala navy / dourado — fonte única Potala */
@@ -25,10 +29,15 @@
 
   --font-display: var(--font-potala-serif);
   --font-body: var(--font-potala-sans);
+  --font-sans: var(--font-potala-sans);
+  --font-serif: var(--font-potala-serif);
+  --font-heading: var(--font-potala-serif);
 
+  /* Fonte única de raios (~6 / 10 / 14px) — shadcn e Potala consomem estes */
   --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius: var(--radius-md);
 
   --shadow-panel: 0 18px 40px rgb(0 0 0 / 28%);
   --shadow-overlay: 0 20px 50px rgba(0, 0, 0, 0.45);
@@ -52,8 +61,39 @@
   --potala-radius-control: var(--radius-md);
   --potala-radius-button: var(--radius-sm);
   --potala-container-max: var(--content-max);
-  --background: var(--potala-bg);
-  --foreground: var(--potala-text);
+
+  /* shadcn → Potala (site dark por padrão, sem depender de .dark) */
+  --background: var(--potala-navy-900);
+  --foreground: var(--potala-text-primary);
+  --card: var(--potala-navy-800);
+  --card-foreground: var(--potala-text-primary);
+  --popover: var(--potala-navy-750);
+  --popover-foreground: var(--potala-text-primary);
+  --primary: var(--potala-gold-500);
+  --primary-foreground: var(--potala-navy-950);
+  --secondary: var(--potala-navy-700);
+  --secondary-foreground: var(--potala-text-primary);
+  --muted: var(--potala-navy-800);
+  --muted-foreground: var(--potala-text-secondary);
+  --accent: rgba(213, 166, 79, 0.12);
+  --accent-foreground: var(--potala-gold-400);
+  --destructive: var(--potala-danger);
+  --border: var(--potala-border);
+  --input: var(--potala-border);
+  --ring: var(--potala-gold-500);
+  --chart-1: #d5a64f;
+  --chart-2: #6ea8d8;
+  --chart-3: #65b96e;
+  --chart-4: #9b7ed8;
+  --chart-5: #d98952;
+  --sidebar: var(--potala-navy-950);
+  --sidebar-foreground: var(--potala-text-primary);
+  --sidebar-primary: var(--potala-gold-500);
+  --sidebar-primary-foreground: var(--potala-navy-950);
+  --sidebar-accent: rgba(213, 166, 79, 0.12);
+  --sidebar-accent-foreground: var(--potala-gold-500);
+  --sidebar-border: var(--potala-border);
+  --sidebar-ring: var(--potala-gold-500);
 }
 
 @theme inline {
@@ -70,6 +110,44 @@
   --color-potala-border: var(--potala-border);
   --font-sans: var(--font-potala-sans);
   --font-serif: var(--font-potala-serif);
+  --font-heading: var(--font-potala-serif);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  /* Raios: valores literais no tema (sem calc sobre --radius → sem ciclo) */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 1.75rem;
 }
 
 * {
@@ -1451,5 +1529,21 @@ img {
   .marketplace-footer__links a,
   .marketplace-footer__contact-list a {
     transition: none;
+  }
+}
+
+/* .dark removido: o tema Potala já é navy/dourado em :root */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* body: estilos em regra global abaixo — não sobrescrever com bg claro */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
   }
 }
