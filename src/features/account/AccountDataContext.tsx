@@ -16,7 +16,6 @@ import type {
   CustomerFavorite,
   CustomerOrder,
   CustomerReturnRequest,
-  CustomerReview,
   CustomerSupportTicket,
 } from "@/features/account/domain";
 import { CUSTOMER_ACCOUNT_STORAGE_KEY } from "@/features/account/domain";
@@ -25,6 +24,7 @@ import {
   isCustomerAccountDb,
 } from "@/features/account/seed";
 import type { OrderSummary } from "@/types/cart";
+import { formatCheckoutAddressLabel } from "@/types/cart";
 
 interface AccountDataContextValue {
   db: CustomerAccountDb | null;
@@ -209,6 +209,11 @@ export function AccountDataProvider({ children }: { children: ReactNode }) {
   const appendOrderFromCheckout = useCallback(
     (order: OrderSummary) => {
       if (!db) return;
+      if (db.orders.some((item) => item.code === order.orderId)) {
+        return;
+      }
+
+      const { shippingAddress } = order;
       const customerOrder: CustomerOrder = {
         id: uid("cord"),
         code: order.orderId,
@@ -231,15 +236,23 @@ export function AccountDataProvider({ children }: { children: ReactNode }) {
         total: order.total,
         paymentMethod: order.paymentMethod,
         paymentLabel: order.paymentLabel,
-        addressLabel: order.customerName,
-        city: "—",
-        state: "—",
+        addressLabel: formatCheckoutAddressLabel({
+          cep: shippingAddress.cep,
+          street: shippingAddress.street,
+          number: shippingAddress.number,
+          complement: shippingAddress.complement,
+          neighborhood: shippingAddress.neighborhood,
+          city: shippingAddress.city,
+          state: shippingAddress.state,
+        }),
+        city: shippingAddress.city,
+        state: shippingAddress.state,
         timeline: [
           {
             id: uid("ct"),
             at: order.createdAt,
             label: "Pedido realizado",
-            detail: "Registrado no histórico demonstrativo da conta.",
+            detail: `${shippingAddress.neighborhood} · CEP ${shippingAddress.cep}`,
           },
           {
             id: uid("ct"),
@@ -249,23 +262,9 @@ export function AccountDataProvider({ children }: { children: ReactNode }) {
         ],
       };
 
-      const pendingReviews: CustomerReview[] = order.items.map((item) => ({
-        id: uid("crev"),
-        orderId: customerOrder.id,
-        productId: item.productId,
-        productName: item.name,
-        productSlug: item.slug,
-        rating: 0,
-        comment: "",
-        status: "pending",
-        createdAt: order.createdAt,
-        updatedAt: order.createdAt,
-      }));
-
       persist({
         ...db,
         orders: [customerOrder, ...db.orders],
-        reviews: [...pendingReviews, ...db.reviews],
       });
     },
     [db, persist],

@@ -13,6 +13,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { FEATURED_CATEGORIES, PRODUCTS } from "@/data/marketplace";
+import { catalogHref } from "@/features/catalog/selectors";
 import { textIncludes } from "@/lib/normalizeText";
 import { SearchIcon } from "@/components/storefront/icons";
 
@@ -21,7 +22,7 @@ interface StoreSearchHit {
   label: string;
   meta: string;
   href: string;
-  group: "Produtos" | "Categorias";
+  group: "Produtos" | "Categorias" | "Ações";
 }
 
 function searchStorefront(query: string): StoreSearchHit[] {
@@ -52,11 +53,21 @@ function searchStorefront(query: string): StoreSearchHit[] {
       id: category.id,
       label: category.name,
       meta: "Categoria",
-      href: category.href.startsWith("/") ? category.href : `/${category.href}`,
+      href: category.href,
       group: "Categorias" as const,
     }));
 
-  return [...products, ...categories];
+  const actions: StoreSearchHit[] = [
+    {
+      id: "see-all-results",
+      label: `Ver todos os resultados para “${q}”`,
+      meta: "Catálogo",
+      href: catalogHref({ q }),
+      group: "Ações",
+    },
+  ];
+
+  return [...products, ...categories, ...actions];
 }
 
 export function StorefrontSearch() {
@@ -70,6 +81,7 @@ export function StorefrontSearch() {
   const hasQuery = query.trim().length > 0;
   const productHits = results.filter((item) => item.group === "Produtos");
   const categoryHits = results.filter((item) => item.group === "Categorias");
+  const actionHits = results.filter((item) => item.group === "Ações");
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -183,6 +195,20 @@ export function StorefrontSearch() {
                         {item.meta}
                       </span>
                     </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ) : null}
+
+            {hasQuery && actionHits.length > 0 ? (
+              <CommandGroup heading="Catálogo">
+                {actionHits.map((item) => (
+                  <CommandItem
+                    key={`action-${item.id}`}
+                    value={`action:${item.id}:${item.label}`}
+                    onSelect={() => openResult(item.href)}
+                  >
+                    <span>{item.label}</span>
                   </CommandItem>
                 ))}
               </CommandGroup>

@@ -3,24 +3,15 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { OrderSummary } from "@/types/cart";
+import { formatCheckoutAddressLabel } from "@/types/cart";
 import { ORDER_STORAGE_KEY } from "@/data/cart";
+import { parseStoredOrderSummary } from "@/lib/parseStoredOrderSummary";
 import { formatPrice } from "@/data/marketplace";
+import { useAuth } from "@/context/AuthContext";
 import styles from "./page.module.css";
 
-function parseOrder(raw: string | null): OrderSummary | null {
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw) as OrderSummary;
-    if (!parsed || typeof parsed.orderId !== "string" || !Array.isArray(parsed.items)) {
-      return null;
-    }
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
 export default function CheckoutSuccessPage() {
+  const { user, isAuthenticated, isHydrated } = useAuth();
   const [order, setOrder] = useState<OrderSummary | null>(null);
   const [ready, setReady] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -33,7 +24,11 @@ export default function CheckoutSuccessPage() {
         return;
       }
 
-      setOrder(parseOrder(window.sessionStorage.getItem(ORDER_STORAGE_KEY)));
+      setOrder(
+        parseStoredOrderSummary(
+          window.sessionStorage.getItem(ORDER_STORAGE_KEY),
+        ),
+      );
       setReady(true);
     });
 
@@ -54,7 +49,7 @@ export default function CheckoutSuccessPage() {
     }
   }
 
-  if (!ready) {
+  if (!ready || !isHydrated) {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
@@ -80,6 +75,12 @@ export default function CheckoutSuccessPage() {
       </div>
     );
   }
+
+  const isCustomer = isAuthenticated && user?.role === "customer";
+  const ordersHref = isCustomer ? "/minha-conta/pedidos" : "/acesso";
+  const ordersLabel = isCustomer
+    ? "Ver meus pedidos"
+    : "Entrar para acompanhar";
 
   return (
     <div className={styles.page}>
@@ -123,6 +124,16 @@ export default function CheckoutSuccessPage() {
               <dt>Pagamento</dt>
               <dd>{order.paymentLabel}</dd>
             </div>
+            <div>
+              <dt>Endereço</dt>
+              <dd>
+                {formatCheckoutAddressLabel(order.shippingAddress)}
+                <br />
+                {order.shippingAddress.neighborhood} ·{" "}
+                {order.shippingAddress.city}/{order.shippingAddress.state} · CEP{" "}
+                {order.shippingAddress.cep}
+              </dd>
+            </div>
             <div className={styles.total}>
               <dt>Total</dt>
               <dd>{formatPrice(order.total)}</dd>
@@ -147,16 +158,17 @@ export default function CheckoutSuccessPage() {
         <section className={styles.next}>
           <h2>Próximos passos</h2>
           <p>
-            Em breve você poderá acompanhar pedidos na área autenticada. Por ora,
-            este protótipo encerra o fluxo público de compra.
+            {isCustomer
+              ? "O pedido também foi registrado no histórico demonstrativo da sua conta neste navegador."
+              : "Faça login na área da conta para acompanhar o histórico demonstrativo de pedidos neste navegador."}
           </p>
           <div className={styles.actions}>
             <Link href="/#produtos" className={styles.primaryBtn}>
               Continuar comprando
             </Link>
-            <span className={styles.disabledLink} aria-disabled="true">
-              Ver meus pedidos · Disponível em breve
-            </span>
+            <Link href={ordersHref} className={styles.secondaryBtn}>
+              {ordersLabel}
+            </Link>
           </div>
         </section>
       </div>

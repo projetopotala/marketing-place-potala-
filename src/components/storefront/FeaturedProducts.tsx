@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getFeaturedProducts } from "@/data/marketplace";
 import { FeaturedProductsCarousel } from "@/components/storefront/FeaturedProductsCarousel";
 import { ArrowRightIcon } from "@/components/storefront/icons";
@@ -9,7 +10,7 @@ export function FeaturedProducts() {
     <section
       id="produtos"
       aria-labelledby="featured-products-heading"
-      className="bg-potala-bg py-9 md:py-11"
+      className="scroll-mt-28 bg-potala-bg py-9 md:py-11"
     >
       <div className="featured-products-container">
         <div className="mb-6 flex items-center justify-between gap-4 md:mb-7">
@@ -23,9 +24,9 @@ export function FeaturedProducts() {
             <span aria-hidden="true" className="product-heading-ornament" />
           </div>
 
-          <a
-            href="#produtos"
-            className="inline-flex shrink-0 items-center gap-2.5 text-sm text-potala-cream/90 transition hover:text-potala-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold-light"
+          <Link
+            href="/catalogo"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2.5 text-sm text-potala-cream/90 transition hover:text-potala-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold-light"
           >
             Ver todos
             <span
@@ -34,7 +35,7 @@ export function FeaturedProducts() {
             >
               <ArrowRightIcon className="h-3.5 w-3.5" />
             </span>
-          </a>
+          </Link>
         </div>
 
         <FeaturedProductsCarousel products={products} />

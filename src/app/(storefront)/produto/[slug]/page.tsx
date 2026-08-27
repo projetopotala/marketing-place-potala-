@@ -59,7 +59,7 @@ export default async function ProductPage({
               <Link href="/">Início</Link>
             </li>
             <li>
-              <Link href={`/#categoria-${product.categoryId}`}>
+              <Link href={`/categoria/${product.categoryId}`}>
                 {product.category}
               </Link>
             </li>
@@ -82,15 +82,22 @@ export default async function ProductPage({
         </div>
 
         <div className={styles.details}>
-          {product.longDescription ? (
+          {product.longDescription || product.characteristics?.length ? (
             <section
               className={styles.block}
+              id={product.modality === "course" || product.action === "details" ? "programa-curso" : undefined}
               aria-labelledby="product-description-title"
             >
               <h2 id="product-description-title" className={styles.blockTitle}>
-                Descrição
+                {product.modality === "course" || product.action === "details"
+                  ? "Programa"
+                  : "Descrição"}
               </h2>
-              <p className={styles.copy}>{product.longDescription}</p>
+              {product.longDescription ? (
+                <p className={styles.copy}>{product.longDescription}</p>
+              ) : product.description ? (
+                <p className={styles.copy}>{product.description}</p>
+              ) : null}
             </section>
           ) : null}
 
@@ -103,7 +110,9 @@ export default async function ProductPage({
                 id="product-characteristics-title"
                 className={styles.blockTitle}
               >
-                Características
+                {product.modality === "course" || product.action === "details"
+                  ? "Detalhes do programa"
+                  : "Características"}
               </h2>
               <dl className={styles.specs}>
                 {product.characteristics.map((item) => (
@@ -116,7 +125,10 @@ export default async function ProductPage({
             </section>
           ) : null}
 
-          {product.shippingSummary && product.shippingSummary.length > 0 ? (
+          {product.shippingSummary &&
+          product.shippingSummary.length > 0 &&
+          product.modality !== "course" &&
+          product.action !== "details" ? (
             <section
               className={styles.block}
               aria-labelledby="product-shipping-title"

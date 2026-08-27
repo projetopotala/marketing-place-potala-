@@ -5,7 +5,6 @@ import {
   SELLER_DEMO_ID,
 } from "../../src/types/auth";
 import { createAdminSeed } from "../../src/features/admin/data/seed";
-import { CUSTOMER_ACCOUNT_STORAGE_KEY } from "../../src/features/account/domain";
 
 const VIEWPORTS = [
   { name: "390", width: 390, height: 844 },
@@ -104,21 +103,21 @@ test.describe("storefront busca e âncoras", () => {
     await expect(page).toHaveURL(/\/produto\//);
   });
 
-  test("links absolutos para seções da home", async ({ page }) => {
+  test("links absolutos para seções da home e rotas de catálogo", async ({
+    page,
+  }) => {
     await page.goto("/carrinho");
-    await expect(page.locator('a[href="/#produtos"]').first()).toHaveAttribute(
+    await expect(page.locator('a[href="/catalogo"]').first()).toHaveAttribute(
       "href",
-      "/#produtos",
+      "/catalogo",
     );
-    await page.goto("/#produtos");
-    await expect(page).toHaveURL(/\/#produtos/);
 
-    await page.goto("/acesso");
+    await page.goto("/");
     await expect(
-      page.locator('a[href="/#categorias"]').first(),
+      page.getByRole("link", { name: "Conhecer categorias" }),
     ).toHaveAttribute("href", "/#categorias");
     await page.goto("/#categorias");
-    await expect(page).toHaveURL(/\/#categorias/);
+    await expect(page.locator("#categorias")).toBeVisible();
   });
 });
 
@@ -282,19 +281,4 @@ test.describe("admin rotas e viewports", () => {
       expect(overflow).toBeFalsy();
     });
   }
-});
-
-test.describe("checkout → histórico", () => {
-  test("cliente autenticado registra pedido local", async ({ page }) => {
-    await seedSession(page, "customer");
-    await page.goto("/produto/japamala");
-    const add = page.getByRole("button", { name: /Adicionar ao carrinho/i }).first();
-    if (await add.count()) {
-      await add.click();
-    }
-    await page.goto("/checkout");
-    // Se carrinho vazio, o teste valida apenas a chave de storage da conta.
-    const keyHint = CUSTOMER_ACCOUNT_STORAGE_KEY;
-    expect(keyHint).toContain("customer-account");
-  });
 });

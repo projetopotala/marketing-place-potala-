@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRightIcon } from "@/components/storefront/icons";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
 
@@ -42,20 +43,20 @@ export function HeroSection() {
             cura e expansão espiritual.
           </p>
           <div className="mt-8 flex flex-col gap-[1.15rem] sm:flex-row">
-            <a
-              href="#produtos"
+            <Link
+              href="/catalogo"
               className="potala-btn potala-btn-primary min-h-12 px-[1.625rem]"
             >
               Explorar produtos
               <ArrowRightIcon className="h-4 w-4" />
-            </a>
-            <a
-              href="#categorias"
+            </Link>
+            <Link
+              href="/#categorias"
               className="potala-btn potala-btn-secondary min-h-12 px-[1.625rem]"
             >
               Conhecer categorias
               <ArrowRightIcon className="h-4 w-4" />
-            </a>
+            </Link>
           </div>
         </FadeIn>
       </div>

@@ -23,6 +23,16 @@ export interface CheckoutLineItem {
   lineTotal: number;
 }
 
+export interface CheckoutAddress {
+  cep: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+}
+
 export interface OrderSummary {
   orderId: string;
   items: CheckoutLineItem[];
@@ -34,6 +44,9 @@ export interface OrderSummary {
   paymentMethod: CheckoutPaymentMethod;
   paymentLabel: string;
   customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  shippingAddress: CheckoutAddress;
   createdAt: string;
 }
 
@@ -46,4 +59,12 @@ export interface AddCartItemInput {
   unitPrice: number;
   stock: number;
   quantity: number;
+}
+
+/** Rótulo de rua/número/complemento para histórico e confirmação. */
+export function formatCheckoutAddressLabel(address: CheckoutAddress): string {
+  const complement = address.complement?.trim()
+    ? ` — ${address.complement.trim()}`
+    : "";
+  return `${address.street.trim()}, ${address.number.trim()}${complement}`;
 }

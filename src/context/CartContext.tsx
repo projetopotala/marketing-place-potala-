@@ -23,7 +23,7 @@ interface CartContextValue {
   totalItems: number;
   subtotal: number;
   isReady: boolean;
-  addItem: (input: AddCartItemInput) => void;
+  addItem: (input: AddCartItemInput) => boolean;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -69,13 +69,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, isReady]);
 
   const addItem = useCallback((input: AddCartItemInput) => {
-    const stock = Math.max(1, Math.floor(input.stock));
+    const rawStock = Math.floor(input.stock);
+    if (!Number.isFinite(rawStock) || rawStock < 1) {
+      return false;
+    }
+
+    const stock = rawStock;
     const quantityToAdd = clampQuantity(input.quantity, stock);
+    let added = false;
 
     setItems((current) => {
       const existing = current.find((item) => item.productId === input.productId);
 
       if (!existing) {
+        added = true;
         return [
           ...current,
           {
@@ -91,6 +98,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         ];
       }
 
+      const nextQuantity = clampQuantity(existing.quantity + quantityToAdd, stock);
+      added = nextQuantity > existing.quantity;
+
       return current.map((item) =>
         item.productId === input.productId
           ? {
@@ -101,11 +111,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
               name: input.name,
               category: input.category,
               slug: input.slug,
-              quantity: clampQuantity(item.quantity + quantityToAdd, stock),
+              quantity: nextQuantity,
             }
           : item,
       );
     });
+
+    return added;
   }, []);
 
   const removeItem = useCallback((productId: string) => {

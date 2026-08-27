@@ -59,7 +59,7 @@ export function MarketplaceHeader() {
 
           <button
             type="button"
-            className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-[var(--potala-radius-button)] border border-potala-border text-potala-gold lg:hidden"
+            className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-[var(--potala-radius-button)] border border-potala-border text-potala-gold xl:hidden"
             aria-expanded={menuOpen}
             aria-controls={menuId}
             aria-label={menuOpen ? "Fechar menu de categorias" : "Abrir menu de categorias"}
@@ -79,7 +79,7 @@ export function MarketplaceHeader() {
 
       <CategoryNavigation />
 
-      <div id={menuId} className="lg:hidden" hidden={!menuOpen}>
+      <div id={menuId} className="xl:hidden" hidden={!menuOpen}>
         {menuOpen ? (
           <CategoryNavigation
             variant="mobile"

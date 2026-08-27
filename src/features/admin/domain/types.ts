@@ -295,7 +295,7 @@ export interface ReportDefinition {
 }
 
 export interface AdminDemoDb {
-  version: 1;
+  version: 2;
   sellers: Seller[];
   products: AdminProduct[];
   orders: AdminOrder[];

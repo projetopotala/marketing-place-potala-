@@ -16,9 +16,7 @@ export function ProductReviews({ product }: ProductReviewsProps) {
       </h2>
 
       {reviews.length === 0 ? (
-        <p className={styles.empty}>
-          Este produto ainda não possui avaliações detalhadas.
-        </p>
+        <p className={styles.empty}>Sem avaliações</p>
       ) : (
         <ul className={styles.list}>
           {reviews.map((review) => (

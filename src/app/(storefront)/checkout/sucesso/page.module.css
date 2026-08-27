@@ -172,6 +172,7 @@
   background: transparent;
   color: var(--potala-gold);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .secondaryBtn:focus-visible,

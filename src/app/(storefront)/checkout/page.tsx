@@ -111,6 +111,17 @@ export default function CheckoutPage() {
       paymentMethod: payment,
       paymentLabel: PAYMENT_LABELS[payment],
       customerName: fullName.trim(),
+      customerEmail: email.trim(),
+      customerPhone: phone.trim(),
+      shippingAddress: {
+        cep: cep.trim(),
+        street: street.trim(),
+        number: number.trim(),
+        complement: complement.trim() || undefined,
+        neighborhood: neighborhood.trim(),
+        city: city.trim(),
+        state: state.trim().toUpperCase(),
+      },
       createdAt: new Date().toISOString(),
     };
 

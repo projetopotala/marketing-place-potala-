@@ -4,6 +4,11 @@ import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import type { Product } from "@/types/marketplace";
 import { formatPrice } from "@/data/marketplace";
+import {
+  getDiscountPercent,
+  isCourseProduct,
+  isOnOffer,
+} from "@/features/catalog/selectors";
 import { useCart } from "@/context/CartContext";
 import {
   CartIcon,
@@ -21,21 +26,24 @@ interface ProductPurchasePanelProps {
 
 export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
   const router = useRouter();
-  const { addItem } = useCart();
-  const stock = product.stock ?? 1;
+  const { addItem, isReady } = useCart();
+  const isCourse = isCourseProduct(product);
+  const stock = Math.floor(product.stock ?? 0);
   const [quantity, setQuantity] = useState(1);
   const [cep, setCep] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
   const quantityId = useId();
   const cepId = useId();
   const feedbackId = useId();
+  const onOffer = isOnOffer(product);
+  const discountPercent = getDiscountPercent(product);
 
   function decrease() {
     setQuantity((current) => Math.max(1, current - 1));
   }
 
   function increase() {
-    setQuantity((current) => Math.min(stock, current + 1));
+    setQuantity((current) => Math.min(Math.max(stock, 1), current + 1));
   }
 
   function buildCartInput() {
@@ -46,21 +54,82 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       category: product.category,
       imageSrc: product.imageSrc,
       unitPrice: product.price,
-      stock,
+      stock: Math.max(stock, 0),
       quantity,
     };
   }
 
   function handleAddToCart() {
-    addItem(buildCartInput());
-    setFeedback(
-      `${quantity} ${quantity === 1 ? "unidade adicionada" : "unidades adicionadas"} ao carrinho.`,
-    );
+    if (!isReady || stock < 1) {
+      setFeedback("Produto indisponível no momento.");
+      return;
+    }
+    const added = addItem(buildCartInput());
+    if (added) {
+      setFeedback(
+        `${quantity} ${quantity === 1 ? "unidade adicionada" : "unidades adicionadas"} ao carrinho.`,
+      );
+    } else {
+      setFeedback("Limite de estoque atingido. Nenhuma unidade adicional foi incluída.");
+    }
   }
 
   function handleBuyNow() {
-    addItem(buildCartInput());
-    router.push("/checkout");
+    if (!isReady || stock < 1) return;
+    const added = addItem(buildCartInput());
+    if (added) {
+      router.push("/checkout");
+    } else {
+      setFeedback("Limite de estoque atingido. Nenhuma unidade adicional foi incluída.");
+    }
+  }
+
+  if (isCourse) {
+    return (
+      <aside className={styles.panel} aria-labelledby="purchase-panel-title">
+        <h2 id="purchase-panel-title" className={styles.price}>
+          {formatPrice(product.price)}
+        </h2>
+        <p className={styles.stock}>Curso demonstrativo — preço ilustrativo</p>
+        {product.seller ? (
+          <p className={styles.seller}>
+            Oferecido por <strong>{product.seller.name}</strong>
+          </p>
+        ) : null}
+
+        <div className={styles.actions}>
+          <a href="#programa-curso" className={styles.addCart}>
+            Ver programa
+          </a>
+        </div>
+
+        <p id={feedbackId} role="status" aria-live="polite" className={styles.feedback}>
+          Inscrição e acesso às aulas ainda não estão integrados nesta etapa.
+        </p>
+
+        <ul className={styles.summaryList}>
+          <li>
+            <StarIcon className="h-4 w-4" filled />
+            <span>Conteúdo demonstrativo da vitrine pública</span>
+          </li>
+          <li>
+            <ClockIcon className="h-4 w-4" />
+            <span>Sem frete físico — curso digital (ainda não integrado)</span>
+          </li>
+        </ul>
+
+        {product.paymentSummary && product.paymentSummary.length > 0 ? (
+          <div className={styles.payment}>
+            <h3 className={styles.subheading}>Formas de pagamento</h3>
+            <ul>
+              {product.paymentSummary.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </aside>
+    );
   }
 
   return (
@@ -69,10 +138,10 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         {formatPrice(product.price)}
       </h2>
 
-      {product.originalPrice && product.discountPercent ? (
+      {onOffer && product.originalPrice != null && discountPercent != null ? (
         <p className={styles.discountRow}>
           <span className={styles.original}>{formatPrice(product.originalPrice)}</span>
-          <span className={styles.badge}>-{product.discountPercent}%</span>
+          <span className={styles.badge}>-{discountPercent}%</span>
         </p>
       ) : null}
 
@@ -105,7 +174,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             className={styles.qtyInput}
             type="number"
             min={1}
-            max={stock}
+            max={Math.max(stock, 1)}
             value={quantity}
             readOnly
           />
@@ -113,7 +182,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             type="button"
             className={styles.qtyBtn}
             onClick={increase}
-            disabled={quantity >= stock}
+            disabled={quantity >= stock || stock < 1}
             aria-label="Aumentar quantidade"
           >
             <PlusIcon className="h-4 w-4" />
@@ -126,7 +195,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           type="button"
           className={styles.addCart}
           onClick={handleAddToCart}
-          disabled={stock < 1}
+          disabled={!isReady || stock < 1}
         >
           <CartIcon className="h-4 w-4" />
           Adicionar ao carrinho
@@ -135,7 +204,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           type="button"
           className={styles.buyNow}
           onClick={handleBuyNow}
-          disabled={stock < 1}
+          disabled={!isReady || stock < 1}
         >
           Comprar agora
         </button>

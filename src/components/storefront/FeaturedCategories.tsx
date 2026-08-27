@@ -6,7 +6,7 @@ export function FeaturedCategories() {
     <section
       id="categorias"
       aria-labelledby="featured-categories-heading"
-      className="border-b-4 border-potala-bg bg-potala-cream py-5 md:py-6"
+      className="scroll-mt-28 border-b-4 border-potala-bg bg-potala-cream py-5 md:py-6"
     >
       <div className="featured-categories-container">
         <div className="mb-5 flex items-center justify-center gap-3 md:mb-[1.35rem]">

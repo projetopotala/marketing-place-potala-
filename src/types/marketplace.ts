@@ -2,6 +2,9 @@ export type ProductBadge = "Mais vendido" | "Novo" | "Oferta";
 
 export type ProductAction = "cart" | "details";
 
+/** Modalidade do item público. Cursos não usam painel físico de frete. */
+export type ProductModality = "physical" | "course";
+
 export interface NavCategory {
   id: string;
   label: string;
@@ -15,6 +18,8 @@ export interface CategoryHighlight {
   href: string;
   imageSrc: string;
   imageAlt: string;
+  description?: string;
+  productCount?: number;
 }
 
 export interface ProductImage {
@@ -53,6 +58,8 @@ export interface Product {
   imageAlt: string;
   badge?: ProductBadge;
   action: ProductAction;
+  /** Padrão implícito: physical. Cursos usam "course". */
+  modality?: ProductModality;
   featured?: boolean;
   popular?: boolean;
   isNew?: boolean;

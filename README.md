@@ -68,11 +68,12 @@ npm run test:e2e     # build + Playwright (porta 3100)
 | --- | --- |
 | `potala-demo-session-v1` | Sessão autenticada demo |
 | `potala-demo-user-v1` | Perfil cadastrado demo |
-| `potala-admin-demo-db-v1` | Banco admin/seller |
+| `potala-admin-demo-db-v2` | Banco admin/seller (atual) |
+| `potala-admin-demo-db-v1` | Legado — migrado automaticamente para V2 na hidratação |
 | `potala-customer-account-v1:<userId>` | Pedidos, endereços, favoritos, etc. do cliente |
 | Carrinho / pedido | chaves em `src/data/cart.ts` |
 
-Storage corrompido é ignorado e substituído por seed seguro.
+Na abertura do painel admin/vendedor, o app procura a chave V2; se não houver, tenta V1, migra para `version: 2`, grava V2 e remove V1. Se nenhuma chave for válida, usa o seed V2 em memória (sem gravar automaticamente um seed sobre storage irrecuperável).
 
 ## Limitações sem backend
 

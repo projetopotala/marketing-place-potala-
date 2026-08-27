@@ -14,7 +14,7 @@ function event(
 /** Seed determinístico do banco administrativo demonstrativo. */
 export function createAdminSeed(): AdminDemoDb {
   return {
-    version: 1,
+    version: 2,
     updatedAt: NOW,
     settings: {
       marketplaceName: "Instituto Potala Marketplace",
@@ -293,7 +293,7 @@ export function createAdminSeed(): AdminDemoDb {
         status: "active",
         featured: false,
         description: "Obra introdutória à meditação.",
-        imageSrc: "/images/potala/product-poder-do-agora-final.png",
+        imageSrc: "/images/potala/product-livro-agora-final.png",
         imageAlt: "Livro O Poder do Agora",
         attributes: {},
         createdAt: "2026-04-10T10:00:00.000Z",
@@ -311,7 +311,7 @@ export function createAdminSeed(): AdminDemoDb {
         status: "review",
         featured: false,
         description: "Peça nova aguardando moderação.",
-        imageSrc: "/images/potala/product-quartzo-final.png",
+        imageSrc: "/images/potala/product-quartzo.jpg",
         imageAlt: "Quartzo transparente",
         attributes: { Material: "Cristal", Tamanho: "P" },
         createdAt: "2026-08-20T10:00:00.000Z",
@@ -1115,4 +1115,5 @@ export function createAdminSeed(): AdminDemoDb {
   };
 }
 
-export const ADMIN_STORAGE_KEY = "potala-admin-demo-db-v1";
+export const ADMIN_STORAGE_KEY_V1 = "potala-admin-demo-db-v1";
+export const ADMIN_STORAGE_KEY = "potala-admin-demo-db-v2";

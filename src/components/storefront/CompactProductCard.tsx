@@ -9,6 +9,8 @@ interface CompactProductCardProps {
 }
 
 export function CompactProductCard({ product }: CompactProductCardProps) {
+  const hasReviews = product.reviewCount > 0;
+
   return (
     <Link
       href={product.href}
@@ -20,7 +22,7 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
           alt={product.name}
           fill
           sizes="(max-width: 767px) 44vw, (max-width: 1179px) 22vw, 11vw"
-          className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         />
       </div>
 
@@ -32,21 +34,27 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
         {formatPrice(product.price)}
       </p>
 
-      <div
-        className="mt-1 flex items-center gap-0.5 text-potala-gold"
-        aria-label={`Avaliação ${product.rating} de 5 com ${product.reviewCount} avaliações`}
-      >
-        {Array.from({ length: 5 }).map((_, index) => (
-          <StarIcon
-            key={`${product.id}-star-${index}`}
-            className="h-2.5 w-2.5"
-            filled={index < Math.round(product.rating)}
-          />
-        ))}
-        <span className="ml-0.5 text-[0.625rem] text-[color:var(--potala-bg)]/55">
-          ({product.reviewCount})
-        </span>
-      </div>
+      {hasReviews ? (
+        <div
+          className="mt-1 flex items-center gap-0.5 text-potala-gold"
+          aria-label={`Avaliação ${product.rating} de 5 com ${product.reviewCount} avaliações`}
+        >
+          {Array.from({ length: 5 }).map((_, index) => (
+            <StarIcon
+              key={`${product.id}-star-${index}`}
+              className="h-2.5 w-2.5"
+              filled={index < Math.round(product.rating)}
+            />
+          ))}
+          <span className="ml-0.5 text-[0.625rem] text-[color:var(--potala-bg)]/55">
+            ({product.reviewCount})
+          </span>
+        </div>
+      ) : (
+        <p className="mt-1 text-[0.625rem] text-[color:var(--potala-bg)]/55">
+          Sem avaliações
+        </p>
+      )}
     </Link>
   );
 }

@@ -1,6 +1,6 @@
+import { CATALOG_CATEGORIES } from "@/features/catalog/categories";
 import type {
   CategoryHighlight,
-  CompactProduct,
   ContactInfo,
   FooterColumn,
   NavCategory,
@@ -10,6 +10,12 @@ import type {
   ProductImage,
   Testimonial,
 } from "@/types/marketplace";
+
+/**
+ * Catálogo público demonstrativo (fonte canônica da vitrine).
+ * Preços e estoques são fictícios para demonstração.
+ * Novos registros aqui NÃO sincronizam automaticamente com o CRUD admin/vendedor.
+ */
 
 export const ANNOUNCEMENT_TEXT =
   "Frete grátis para todo o Brasil em compras acima de R$ 299";
@@ -24,68 +30,14 @@ export const BRAND = {
 };
 
 export const NAV_CATEGORIES: NavCategory[] = [
-  { id: "categorias", label: "Categorias", href: "/#categorias", hasMenu: true },
-  { id: "cursos", label: "Cursos", href: "/#categoria-cursos" },
-  { id: "terapias", label: "Terapias", href: "/#categoria-terapias" },
-  { id: "livros", label: "Livros", href: "/#categoria-livros" },
-  { id: "incensos", label: "Incensos", href: "/#categoria-incensos" },
-  { id: "cristais", label: "Cristais", href: "/#categoria-cristais" },
-  { id: "acessorios", label: "Acessórios", href: "/#categoria-acessorios" },
-  { id: "meditacao", label: "Meditação", href: "/#categoria-meditacao" },
-  { id: "novidades", label: "Novidades", href: "/#novidades" },
-  { id: "ofertas", label: "Ofertas", href: "/#produtos" },
-];
-
-export const FEATURED_CATEGORIES: CategoryHighlight[] = [
-  {
-    id: "cursos",
-    name: "Cursos",
-    href: "/#categoria-cursos",
-    imageSrc: "/images/potala/category-cursos-final.png",
-    imageAlt: "",
-  },
-  {
-    id: "incensos",
-    name: "Incensos",
-    href: "/#categoria-incensos",
-    imageSrc: "/images/potala/category-incensos-final.png",
-    imageAlt: "",
-  },
-  {
-    id: "cristais",
-    name: "Cristais",
-    href: "/#categoria-cristais",
-    imageSrc: "/images/potala/category-cristais-final.png",
-    imageAlt: "",
-  },
-  {
-    id: "livros",
-    name: "Livros",
-    href: "/#categoria-livros",
-    imageSrc: "/images/potala/category-livros-final.png",
-    imageAlt: "",
-  },
-  {
-    id: "terapias",
-    name: "Terapias",
-    href: "/#categoria-terapias",
-    imageSrc: "/images/potala/category-terapias-final.png",
-    imageAlt: "",
-  },
-  {
-    id: "acessorios",
-    name: "Acessórios",
-    href: "/#categoria-acessorios",
-    imageSrc: "/images/potala/category-acessorios-final.png",
-    imageAlt: "",
-  },
-  {
-    id: "meditacao",
-    name: "Meditação",
-    href: "/#categoria-meditacao",
-    imageSrc: "/images/potala/category-meditacao-final.png",
-    imageAlt: "",
-  },
+  { id: "categorias", label: "Categorias", href: "/catalogo", hasMenu: true },
+  ...CATALOG_CATEGORIES.map((category) => ({
+    id: category.id,
+    label: category.name,
+    href: category.href,
+  })),
+  { id: "novidades", label: "Novidades", href: "/novidades" },
+  { id: "ofertas", label: "Ofertas", href: "/ofertas" },
 ];
 
 export const PRODUCTS: Product[] = [
@@ -160,18 +112,27 @@ export const PRODUCTS: Product[] = [
     imageAlt: "Curso Meditação e Atenção Plena",
     badge: "Novo",
     action: "details",
+    modality: "course",
     featured: true,
     isNew: true,
     sku: "POT-CUR-008",
     stock: 999,
     description:
-      "Programa completo para cultivar atenção plena e profundidade na prática meditativa.",
+      "Programa demonstrativo para cultivar atenção plena e profundidade na prática meditativa. Inscrição e acesso às aulas ainda não estão integrados.",
+    longDescription:
+      "Este programa demonstrativo apresenta módulos introdutórios de meditação e atenção plena, com orientações de respiração, postura e presença no cotidiano. Os conteúdos abaixo são ilustrativos para a vitrine; inscrição, pagamento de curso e acesso às aulas ainda não estão integrados nesta etapa do marketplace.",
     seller: { name: "Instituto Potala", rating: 5 },
     images: [
       {
         src: "/images/potala/product-curso-meditacao-final.png",
         alt: "Curso Meditação e Atenção Plena",
       },
+    ],
+    characteristics: [
+      { label: "Formato", value: "Online — demonstrativo" },
+      { label: "Duração", value: "6 semanas (conteúdo ilustrativo)" },
+      { label: "Módulos", value: "Fundamentos, respiração, presença e integração" },
+      { label: "Acesso", value: "Inscrição/aulas ainda não integradas" },
     ],
   },
   {
@@ -383,7 +344,7 @@ export const PRODUCTS: Product[] = [
     sku: "POT-MED-012",
     stock: 14,
     description:
-      "Sino tibetano de sete metais para abertura e fechamento de práticas.",
+      "Sino tibetano de sete metais para abertura e fechamento de práticas. Catálogo e preços demonstrativos.",
     seller: { name: "Instituto Potala", rating: 4.8 },
     images: [
       {
@@ -392,85 +353,238 @@ export const PRODUCTS: Product[] = [
       },
     ],
   },
-];
-
-export const MOST_SEARCHED_PRODUCTS: CompactProduct[] = [
   {
-    id: "incenso-7-ervas",
-    name: "Incenso Natural 7 Ervas Sagradas",
-    imageSrc: "/images/potala/discovery-incenso-7-ervas-final.png",
-    price: 36.9,
-    rating: 5,
-    reviewCount: 82,
-    href: "/produto/palo-santo",
+    id: "curso-chakras",
+    slug: "curso-chakras",
+    name: "Curso Chakras e Equilíbrio Energético",
+    category: "Cursos",
+    categoryId: "cursos",
+    price: 297,
+    rating: 0,
+    reviewCount: 0,
+    soldCount: 0,
+    imageSrc: "/images/potala/discovery-curso-chakras-final.png",
+    imageAlt:
+      "Ilustração demonstrativa do Curso Chakras e Equilíbrio Energético",
+    badge: "Novo",
+    action: "details",
+    modality: "course",
+    isNew: true,
+    sku: "POT-CUR-012",
+    stock: 999,
+    description:
+      "Programa demonstrativo sobre centros energéticos e práticas de equilíbrio. Inscrição e acesso às aulas ainda não estão integrados.",
+    longDescription:
+      "Conteúdo demonstrativo que apresenta uma visão introdutória dos chakras e práticas suaves de percepção corporal e respiração. Não promete cura, tratamento clínico nem resultados garantidos. Inscrição e acesso às aulas ainda não estão integrados nesta etapa.",
+    seller: { name: "Instituto Potala", rating: 5 },
+    images: [
+      {
+        src: "/images/potala/discovery-curso-chakras-final.png",
+        alt: "Ilustração demonstrativa do Curso Chakras e Equilíbrio Energético",
+      },
+    ],
+    characteristics: [
+      { label: "Formato", value: "Online — demonstrativo" },
+      { label: "Duração", value: "8 semanas (conteúdo ilustrativo)" },
+      {
+        label: "Programa",
+        value:
+          "Introdução aos centros, percepção corporal, respiração e integração cotidiana",
+      },
+      { label: "Acesso", value: "Inscrição/aulas ainda não integradas" },
+    ],
   },
   {
-    id: "quartzo-transparente",
-    name: "Cristal de Quartzo Transparente",
-    imageSrc: "/images/potala/discovery-quartzo-transparente-final.png",
-    price: 89.9,
-    rating: 5,
-    reviewCount: 64,
-    href: "/produto/quartzo-transparente",
+    id: "kit-aromatico-lavanda",
+    slug: "kit-aromatico-lavanda",
+    name: "Kit Aromático de Lavanda",
+    category: "Terapias",
+    categoryId: "terapias",
+    price: 79.9,
+    rating: 0,
+    reviewCount: 0,
+    soldCount: 0,
+    imageSrc: "/images/potala/product-lavanda.jpg",
+    imageAlt:
+      "Imagem ilustrativa de lavanda — não é fotografia exata de todo o kit",
+    action: "cart",
+    modality: "physical",
+    sku: "POT-TER-018",
+    stock: 40,
+    description:
+      "Kit demonstrativo com óleo essencial de lavanda 10ml, sachê aromático e guia de uso sugerido. Preços e estoque são fictícios.",
+    longDescription:
+      "Composição demonstrativa do kit: (1) frasco de óleo essencial de lavanda 10ml; (2) sachê aromático de lavanda seca; (3) cartão com orientações básicas de uso em ambientação. A imagem exibida é ilustrativa de lavanda e não representa uma fotografia exata de todos os itens juntos. Uso destinado a bem-estar e rituais de presença — sem alegação de tratamento clínico.",
+    seller: { name: "Instituto Potala", rating: 4.7 },
+    images: [
+      {
+        src: "/images/potala/product-lavanda.jpg",
+        alt: "Imagem ilustrativa de lavanda para o Kit Aromático",
+      },
+      {
+        src: "/images/potala/discovery-oleo-lavanda-final.png",
+        alt: "Ilustração complementar de óleo de lavanda",
+      },
+    ],
+    characteristics: [
+      { label: "Composição", value: "Óleo 10ml + sachê + guia ilustrativo" },
+      { label: "Volume do óleo", value: "10 ml" },
+      { label: "Uso sugerido", value: "Ambientação e rituais de presença" },
+      {
+        label: "Observação",
+        value: "Imagem ilustrativa — não é foto exata do kit completo",
+      },
+    ],
+    shippingSummary: [
+      "Frete calculado no checkout conforme CEP",
+      "Envio em até 2 dias úteis após confirmação (demonstrativo)",
+      "Embalagem cuidadosa para proteção do produto",
+    ],
+    paymentSummary: [
+      "Pix com confirmação imediata",
+      "Cartões Visa, Mastercard e Elo",
+      "Boleto bancário em até 1 dia útil",
+    ],
   },
   {
     id: "livro-despertar",
+    slug: "livro-despertar",
     name: "Livro O Despertar da Consciência",
-    imageSrc: "/images/potala/discovery-livro-despertar-final.png",
+    category: "Livros",
+    categoryId: "livros",
     price: 49.9,
-    rating: 5,
-    reviewCount: 53,
-    href: "/produto/poder-do-agora",
+    rating: 0,
+    reviewCount: 0,
+    soldCount: 0,
+    imageSrc: "/images/potala/discovery-livro-despertar-final.png",
+    imageAlt: "Capa demonstrativa do Livro O Despertar da Consciência",
+    action: "cart",
+    modality: "physical",
+    sku: "POT-LIV-031",
+    stock: 55,
+    description:
+      "Título demonstrativo de leitura sobre presença e consciência. Dados e preço fictícios para a vitrine.",
+    longDescription:
+      "Obra demonstrativa da vitrine Potala sobre temas de presença e consciência interior. Não inventamos autor, editora nem depoimentos reais neste registro. Ideal como exemplo de listagem de livros físicos no marketplace.",
+    seller: { name: "Instituto Potala", rating: 4.9 },
+    images: [
+      {
+        src: "/images/potala/discovery-livro-despertar-final.png",
+        alt: "Capa demonstrativa do Livro O Despertar da Consciência",
+      },
+    ],
+    characteristics: [
+      { label: "Formato", value: "Livro impresso (demonstrativo)" },
+      { label: "Idioma", value: "Português" },
+      { label: "Páginas", value: "Indicativo — dado ilustrativo" },
+    ],
+    shippingSummary: [
+      "Frete calculado no checkout conforme CEP",
+      "Envio em até 2 dias úteis após confirmação (demonstrativo)",
+    ],
+    paymentSummary: [
+      "Pix com confirmação imediata",
+      "Cartões Visa, Mastercard e Elo",
+    ],
   },
   {
-    id: "oleo-lavanda-discovery",
-    name: "Óleo Essencial de Lavanda 10ml",
-    imageSrc: "/images/potala/discovery-oleo-lavanda-final.png",
-    price: 44.9,
-    rating: 5,
-    reviewCount: 47,
-    href: "/produto/oleo-lavanda",
-  },
-];
-
-export const NEW_ARRIVAL_PRODUCTS: CompactProduct[] = [
-  {
-    id: "curso-chakras",
-    name: "Curso Chakras e Equilíbrio Energético",
-    imageSrc: "/images/potala/discovery-curso-chakras-final.png",
-    price: 297,
-    rating: 5,
-    reviewCount: 85,
-    href: "/produto/curso-meditacao",
-  },
-  {
-    id: "kit-limpeza-discovery",
-    name: "Kit Limpeza Energética",
-    imageSrc: "/images/potala/discovery-kit-limpeza-final.png",
-    price: 119.9,
-    rating: 5,
-    reviewCount: 29,
-    href: "/produto/kit-limpeza-energetica",
+    id: "incenso-7-ervas",
+    slug: "incenso-7-ervas",
+    name: "Incenso Natural 7 Ervas Sagradas",
+    category: "Incensos",
+    categoryId: "incensos",
+    price: 36.9,
+    rating: 0,
+    reviewCount: 0,
+    soldCount: 0,
+    imageSrc: "/images/potala/discovery-incenso-7-ervas-final.png",
+    imageAlt: "Incenso Natural 7 Ervas Sagradas — imagem demonstrativa",
+    action: "cart",
+    modality: "physical",
+    sku: "POT-INC-021",
+    stock: 90,
+    description:
+      "Incenso natural de blend demonstrativo com sete ervas. Uso para ambientação — sem alegação terapêutica clínica.",
+    longDescription:
+      "Blend demonstrativo de sete ervas aromáticas para ambientação e rituais de quietude. Composição e propriedades são ilustrativas; não há promessa de cura ou eficácia clínica. Preço e estoque são fictícios para a vitrine.",
+    seller: { name: "Instituto Potala", rating: 4.8 },
+    images: [
+      {
+        src: "/images/potala/discovery-incenso-7-ervas-final.png",
+        alt: "Incenso Natural 7 Ervas Sagradas",
+      },
+    ],
+    characteristics: [
+      { label: "Tipo", value: "Incenso natural (demonstrativo)" },
+      { label: "Blend", value: "Sete ervas — composição ilustrativa" },
+      { label: "Uso", value: "Ambientação e rituais de presença" },
+    ],
+    shippingSummary: [
+      "Frete calculado no checkout conforme CEP",
+      "Envio em até 2 dias úteis após confirmação (demonstrativo)",
+    ],
+    paymentSummary: [
+      "Pix com confirmação imediata",
+      "Cartões Visa, Mastercard e Elo",
+    ],
   },
   {
     id: "caderno-mantras",
+    slug: "caderno-mantras",
     name: "Caderno de Mantras",
-    imageSrc: "/images/potala/discovery-caderno-mantras-final.png",
+    category: "Acessórios",
+    categoryId: "acessorios",
     price: 39.9,
-    rating: 5,
-    reviewCount: 19,
-    href: "/produto/japamala",
-  },
-  {
-    id: "sino-tibetano-discovery",
-    name: "Sino Tibetano 7 Metais",
-    imageSrc: "/images/potala/discovery-sino-tibetano-final.png",
-    price: 179.9,
-    rating: 5,
-    reviewCount: 244,
-    href: "/produto/sino-tibetano",
+    rating: 0,
+    reviewCount: 0,
+    soldCount: 0,
+    imageSrc: "/images/potala/discovery-caderno-mantras-final.png",
+    imageAlt: "Caderno de Mantras — imagem demonstrativa",
+    badge: "Novo",
+    action: "cart",
+    modality: "physical",
+    isNew: true,
+    sku: "POT-ACE-044",
+    stock: 70,
+    description:
+      "Caderno demonstrativo para anotações de mantras e práticas. Preço e estoque fictícios.",
+    longDescription:
+      "Caderno pautado demonstrativo para registrar mantras, intenções e reflexões da prática. Acabamento e número de páginas são ilustrativos. Sem avaliações reais cadastradas neste registro.",
+    seller: { name: "Instituto Potala", rating: 4.9 },
+    images: [
+      {
+        src: "/images/potala/discovery-caderno-mantras-final.png",
+        alt: "Caderno de Mantras",
+      },
+    ],
+    characteristics: [
+      { label: "Formato", value: "Caderno pautado (demonstrativo)" },
+      { label: "Uso", value: "Anotações de mantras e práticas" },
+      { label: "Acabamento", value: "Capa ilustrativa da vitrine" },
+    ],
+    shippingSummary: [
+      "Frete calculado no checkout conforme CEP",
+      "Envio em até 2 dias úteis após confirmação (demonstrativo)",
+    ],
+    paymentSummary: [
+      "Pix com confirmação imediata",
+      "Cartões Visa, Mastercard e Elo",
+    ],
   },
 ];
+
+/** Cards da home — derivados das categorias centrais + contagem real de PRODUCTS. */
+export const FEATURED_CATEGORIES: CategoryHighlight[] = CATALOG_CATEGORIES.map(
+  (category) => ({
+    id: category.id,
+    name: category.name,
+    href: category.href,
+    imageSrc: category.imageSrc,
+    imageAlt: category.imageAlt,
+    description: category.description,
+    productCount: PRODUCTS.filter((p) => p.categoryId === category.id).length,
+  }),
+);
 
 export const PHILOSOPHY_PILLARS: PhilosophyPillar[] = [
   {
@@ -544,7 +658,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     title: "Ajuda",
     links: [
       { label: "Central de Ajuda", href: "/minha-conta/ajuda" },
-      { label: "Como Comprar", href: "/#produtos" },
+      { label: "Como Comprar", href: "/catalogo" },
       { label: "Trocas e Devoluções", href: "/minha-conta/devolucoes" },
       { label: "Formas de Pagamento", href: "/#contato" },
       { label: "Política de Privacidade", href: "/#contato" },
@@ -555,7 +669,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       { label: "Meus Pedidos", href: "/minha-conta/pedidos" },
       { label: "Lista de Desejos", href: "/minha-conta/favoritos" },
-      { label: "Cursos e Conteúdos", href: "/#categoria-cursos" },
+      { label: "Cursos e Conteúdos", href: "/categoria/cursos" },
       { label: "Meus Endereços", href: "/minha-conta/enderecos" },
       { label: "Minha Conta", href: "/minha-conta" },
     ],
@@ -619,7 +733,7 @@ export function getPopularProducts(): Product[] {
 }
 
 export function getNewProducts(): Product[] {
-  return PRODUCTS.filter((product) => product.isNew || product.badge === "Novo");
+  return PRODUCTS.filter((product) => product.isNew === true);
 }
 
 export function getProductBySlug(slug: string): Product | undefined {

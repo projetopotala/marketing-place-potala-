@@ -10,7 +10,12 @@ import {
   type ReactNode,
 } from "react";
 import type { AdminDemoDb } from "@/features/admin/domain/types";
-import { ADMIN_STORAGE_KEY, createAdminSeed } from "@/features/admin/data/seed";
+import {
+  ADMIN_STORAGE_KEY,
+  ADMIN_STORAGE_KEY_V1,
+  createAdminSeed,
+} from "@/features/admin/data/seed";
+import { migrateAdminDemoDb } from "@/features/admin/data/migrateAdminDemoDb";
 import { LocalAdminRepository } from "@/features/admin/repository/LocalAdminRepository";
 import type { AdminRepository } from "@/features/admin/repository/AdminRepository";
 
@@ -24,16 +29,84 @@ interface AdminDataContextValue {
 
 const AdminDataContext = createContext<AdminDataContextValue | null>(null);
 
-function isAdminDemoDb(value: unknown): value is AdminDemoDb {
-  if (!value || typeof value !== "object") return false;
-  const db = value as Record<string, unknown>;
-  return (
-    db.version === 1 &&
-    Array.isArray(db.sellers) &&
-    Array.isArray(db.products) &&
-    Array.isArray(db.orders) &&
-    Array.isArray(db.customers)
-  );
+type HydrateSource = "v2" | "v1" | "seed";
+
+function diagnoseError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.name || "Error";
+  }
+  return typeof error === "string" ? "string" : "unknown";
+}
+
+/** Diagnóstico breve — sem dados de clientes, pedidos ou dump do banco. */
+function logAdminStorageFailure(stage: string, error: unknown) {
+  console.warn(`[admin-demo-db] ${stage}: ${diagnoseError(error)}`);
+}
+
+function readRaw(key: string): unknown | null {
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw) as unknown;
+  } catch (error) {
+    logAdminStorageFailure(`read:${key === ADMIN_STORAGE_KEY ? "v2" : "v1"}`, error);
+    return null;
+  }
+}
+
+function tryPersistV2(db: AdminDemoDb): boolean {
+  try {
+    window.localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(db));
+    return true;
+  } catch (error) {
+    logAdminStorageFailure("persist-v2", error);
+    return false;
+  }
+}
+
+function tryRemoveV1(): void {
+  try {
+    window.localStorage.removeItem(ADMIN_STORAGE_KEY_V1);
+  } catch (error) {
+    logAdminStorageFailure("remove-v1", error);
+  }
+}
+
+/**
+ * Hidratação: V2 → migrar; senão V1 → migrar; senão seed em memória.
+ * Cada tentativa é isolada — falha em V2 não pula direto para o seed.
+ * Storage inválido/corrompido não é sobrescrito nem removido automaticamente.
+ */
+function hydrateAdminDemoDb(): {
+  db: AdminDemoDb;
+  source: HydrateSource;
+  shouldPersistV2: boolean;
+} {
+  try {
+    const rawV2 = readRaw(ADMIN_STORAGE_KEY);
+    if (rawV2 !== null) {
+      const fromV2 = migrateAdminDemoDb(rawV2);
+      if (fromV2) {
+        return { db: fromV2, source: "v2", shouldPersistV2: true };
+      }
+    }
+  } catch (error) {
+    logAdminStorageFailure("load-v2", error);
+  }
+
+  try {
+    const rawV1 = readRaw(ADMIN_STORAGE_KEY_V1);
+    if (rawV1 !== null) {
+      const fromV1 = migrateAdminDemoDb(rawV1);
+      if (fromV1) {
+        return { db: fromV1, source: "v1", shouldPersistV2: true };
+      }
+    }
+  } catch (error) {
+    logAdminStorageFailure("load-v1", error);
+  }
+
+  return { db: createAdminSeed(), source: "seed", shouldPersistV2: false };
 }
 
 /**
@@ -47,22 +120,30 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    Promise.resolve().then(() => {
-      if (cancelled) return;
-      try {
-        const raw = window.localStorage.getItem(ADMIN_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw) as unknown;
-          if (isAdminDemoDb(parsed)) {
-            repo.setDb(parsed);
-            setDb(parsed);
+    Promise.resolve()
+      .then(() => {
+        if (cancelled) return;
+        const { db: next, source, shouldPersistV2 } = hydrateAdminDemoDb();
+        if (cancelled) return;
+
+        repo.setDb(next);
+        setDb(next);
+
+        if (shouldPersistV2) {
+          const wroteV2Ok = tryPersistV2(next);
+          if (wroteV2Ok && source === "v1") {
+            tryRemoveV1();
           }
         }
-      } catch {
-        // ignora storage corrompido e mantém seed
-      }
-      setIsHydrated(true);
-    });
+      })
+      .catch((error) => {
+        logAdminStorageFailure("hydrate", error);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsHydrated(true);
+        }
+      });
     return () => {
       cancelled = true;
     };
@@ -70,17 +151,20 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(
     (next: AdminDemoDb) => {
-      repo.setDb(next);
-      setDb(next);
-      window.localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(next));
+      const normalized = { ...next, version: 2 as const };
+      repo.setDb(normalized);
+      setDb(normalized);
+      tryPersistV2(normalized);
     },
     [repo],
   );
 
   const resetDemoData = useCallback(() => {
     const next = repo.resetDemoData();
-    setDb(next);
-    window.localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(next));
+    const normalized = { ...next, version: 2 as const };
+    repo.setDb(normalized);
+    setDb(normalized);
+    tryPersistV2(normalized);
   }, [repo]);
 
   const value = useMemo<AdminDataContextValue>(

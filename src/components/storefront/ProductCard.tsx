@@ -2,9 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useId, useState, type MouseEvent } from "react";
 import { Heart } from "lucide-react";
 import type { Product } from "@/types/marketplace";
 import { formatPrice } from "@/data/marketplace";
+import {
+  getDiscountPercent,
+  isOnOffer,
+} from "@/features/catalog/selectors";
 import {
   ArrowRightIcon,
   CartIcon,
@@ -12,6 +17,7 @@ import {
 } from "@/components/storefront/icons";
 import { useAccountData } from "@/features/account/AccountDataContext";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 
 interface ProductCardProps {
   product: Product;
@@ -30,10 +36,55 @@ export function ProductCard({
   const href = `/produto/${product.slug}`;
   const { user } = useAuth();
   const { isFavorite, toggleFavorite, isHydrated } = useAccountData();
+  const { addItem, isReady, items } = useCart();
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const statusId = useId();
   const favorite =
     user?.role === "customer" && isHydrated
       ? isFavorite(product.id)
       : false;
+
+  const stock = Math.floor(product.stock ?? 0);
+  const inCart = items.find((item) => item.productId === product.id);
+  const remaining =
+    Number.isFinite(stock) && stock > 0
+      ? Math.max(0, stock - (inCart?.quantity ?? 0))
+      : 0;
+  const canAdd =
+    isReady && !isDetails && stock > 0 && remaining > 0;
+  const onOffer = isOnOffer(product);
+  const discountPercent = getDiscountPercent(product);
+  const hasReviews = product.reviewCount > 0;
+
+  function handleAddToCart(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!canAdd) {
+      setFeedback(
+        stock < 1
+          ? `${product.name} indisponível no momento.`
+          : `Limite de estoque atingido para ${product.name}.`,
+      );
+      return;
+    }
+
+    const added = addItem({
+      productId: product.id,
+      slug: product.slug,
+      name: product.name,
+      category: product.category,
+      imageSrc: product.imageSrc,
+      unitPrice: product.price,
+      stock,
+      quantity: 1,
+    });
+
+    if (added) {
+      setFeedback(`${product.name} adicionado ao carrinho.`);
+    } else {
+      setFeedback(`Não foi possível adicionar ${product.name} ao carrinho.`);
+    }
+  }
 
   return (
     <article
@@ -88,16 +139,18 @@ export function ProductCard({
           src={product.imageSrc}
           alt={product.name}
           fill
-          className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
           sizes={
             compact
               ? "(max-width: 639px) 70vw, 208px"
               : "(max-width: 639px) 82vw, (max-width: 899px) 46vw, (max-width: 1279px) 31vw, 18vw"
           }
         />
-        {product.badge ? (
+        {product.badge || onOffer ? (
           <span className="absolute left-2.5 top-2.5 z-10 rounded-[0.3rem] bg-potala-gold px-2 py-[0.2rem] text-[0.7rem] font-semibold leading-none text-potala-bg">
-            {product.badge}
+            {onOffer && discountPercent != null
+              ? `−${discountPercent}%`
+              : product.badge}
           </span>
         ) : null}
       </Link>
@@ -124,45 +177,66 @@ export function ProductCard({
         >
           <Link
             href={href}
-            className="transition hover:text-potala-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold"
+            className="line-clamp-2 transition hover:text-potala-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold"
           >
             {product.name}
           </Link>
         </h3>
 
-        <div
-          className="flex items-center gap-0.5 text-potala-gold"
-          aria-label={`Avaliação ${product.rating} de 5 com ${product.reviewCount} avaliações`}
-        >
-          {Array.from({ length: 5 }).map((_, index) => (
-            <StarIcon
-              key={`${product.id}-star-${index}`}
-              className="h-3 w-3"
-              filled={index < Math.round(product.rating)}
-            />
-          ))}
-          <span
-            className={`ml-1 text-[0.7rem] ${
+        {hasReviews ? (
+          <div
+            className="flex items-center gap-0.5 text-potala-gold"
+            aria-label={`Avaliação ${product.rating} de 5 com ${product.reviewCount} avaliações`}
+          >
+            {Array.from({ length: 5 }).map((_, index) => (
+              <StarIcon
+                key={`${product.id}-star-${index}`}
+                className="h-3 w-3"
+                filled={index < Math.round(product.rating)}
+              />
+            ))}
+            <span
+              className={`ml-1 text-[0.7rem] ${
+                isLight ? "text-[color:var(--potala-bg)]/55" : "text-potala-muted"
+              }`}
+            >
+              ({product.reviewCount})
+            </span>
+          </div>
+        ) : (
+          <p
+            className={`text-[0.7rem] ${
               isLight ? "text-[color:var(--potala-bg)]/55" : "text-potala-muted"
             }`}
           >
-            ({product.reviewCount})
-          </span>
-        </div>
+            Sem avaliações
+          </p>
+        )}
 
-        <p
-          className={`mt-auto font-bold ${
-            compact ? "text-base" : "text-[1.1rem] md:text-[1.15rem]"
-          } ${isLight ? "text-potala-bg" : "text-potala-cream"}`}
-        >
-          {formatPrice(product.price)}
-        </p>
+        <div className="mt-auto">
+          {onOffer && product.originalPrice != null ? (
+            <p
+              className={`text-[0.75rem] line-through ${
+                isLight ? "text-[color:var(--potala-bg)]/45" : "text-potala-muted"
+              }`}
+            >
+              {formatPrice(product.originalPrice)}
+            </p>
+          ) : null}
+          <p
+            className={`font-bold ${
+              compact ? "text-base" : "text-[1.1rem] md:text-[1.15rem]"
+            } ${isLight ? "text-potala-bg" : "text-potala-cream"}`}
+          >
+            {formatPrice(product.price)}
+          </p>
+        </div>
 
         {isDetails ? (
           <Link
             href={href}
             className={`mt-1 inline-flex w-full items-center gap-2 rounded-[0.375rem] border border-potala-gold/55 bg-transparent px-3 text-[0.8rem] font-semibold text-potala-gold transition hover:border-potala-gold-light hover:bg-potala-gold/10 hover:text-potala-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold-light ${
-              compact ? "min-h-9 justify-center" : "min-h-[2.5rem] justify-center"
+              compact ? "min-h-11 justify-center" : "min-h-11 justify-center"
             } ${
               isLight
                 ? "border-[color:var(--potala-bg)]/25 text-[color:var(--potala-bg)] hover:bg-[color:var(--potala-bg)]/5"
@@ -176,20 +250,40 @@ export function ProductCard({
         ) : (
           <button
             type="button"
-            className={`mt-1 inline-flex w-full items-center gap-2 rounded-[0.375rem] border border-potala-gold/55 bg-transparent px-3 text-[0.8rem] font-semibold text-potala-gold transition hover:border-potala-gold-light hover:bg-potala-gold/10 hover:text-potala-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold-light ${
-              compact ? "min-h-9 justify-between" : "min-h-[2.5rem] justify-between"
+            className={`mt-1 inline-flex w-full items-center gap-2 rounded-[0.375rem] border border-potala-gold/55 bg-transparent px-3 text-[0.8rem] font-semibold text-potala-gold transition hover:border-potala-gold-light hover:bg-potala-gold/10 hover:text-potala-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-potala-gold-light disabled:cursor-not-allowed disabled:opacity-50 ${
+              compact ? "min-h-11 justify-between" : "min-h-11 justify-between"
             } ${
               isLight
                 ? "border-[color:var(--potala-bg)]/25 text-[color:var(--potala-bg)] hover:bg-[color:var(--potala-bg)]/5"
                 : ""
             }`}
             aria-label={`${actionLabel}: ${product.name}`}
+            aria-describedby={statusId}
+            disabled={!canAdd}
+            onClick={handleAddToCart}
           >
             <CartIcon className="h-4 w-4 shrink-0" />
-            <span className="flex-1 text-left">{actionLabel}</span>
+            <span className="flex-1 text-left">
+              {!isReady
+                ? "Carregando…"
+                : stock < 1
+                  ? "Indisponível"
+                  : remaining < 1
+                    ? "Estoque no carrinho"
+                    : actionLabel}
+            </span>
             <ArrowRightIcon className="h-4 w-4 shrink-0" />
           </button>
         )}
+
+        <p
+          id={statusId}
+          role="status"
+          aria-live="polite"
+          className="sr-only"
+        >
+          {feedback}
+        </p>
       </div>
     </article>
   );
