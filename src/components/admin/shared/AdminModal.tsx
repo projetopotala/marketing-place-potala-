@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { Dialog, AlertDialog } from "radix-ui";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import styles from "./shared.module.css";
@@ -13,6 +13,37 @@ interface AdminModalProps {
   actions?: ReactNode;
 }
 
+/**
+ * Dialog controlado sem Trigger: captura o foco do gatilho antes do trap
+ * e devolve após o fechamento (Escape / backdrop / onOpenChange).
+ */
+function useRestoreFocus(open: boolean) {
+  const previouslyFocused = useRef<HTMLElement | null>(null);
+  const wasOpen = useRef(false);
+
+  useLayoutEffect(() => {
+    if (open && !wasOpen.current) {
+      previouslyFocused.current =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+    }
+
+    if (!open && wasOpen.current) {
+      const el = previouslyFocused.current;
+      const timer = window.setTimeout(() => {
+        if (el && typeof el.focus === "function") {
+          el.focus();
+        }
+      }, 50);
+      wasOpen.current = open;
+      return () => window.clearTimeout(timer);
+    }
+
+    wasOpen.current = open;
+  }, [open]);
+}
+
 export function AdminModal({
   open,
   title,
@@ -22,6 +53,7 @@ export function AdminModal({
 }: AdminModalProps) {
   const titleId = useId();
   const reduceMotion = useReducedMotion();
+  useRestoreFocus(open);
 
   return (
     <Dialog.Root
@@ -42,23 +74,25 @@ export function AdminModal({
                 transition={{ duration: 0.18 }}
               />
             </Dialog.Overlay>
-            <Dialog.Content asChild aria-labelledby={titleId}>
-              <motion.div
-                className={styles.dialog}
-                initial={reduceMotion ? false : { opacity: 0, scale: 0.98, y: 8 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
-              >
-                <Dialog.Title id={titleId} className={styles.dialogTitle}>
-                  {title}
-                </Dialog.Title>
-                <div className={styles.dialogBody}>{children}</div>
-                {actions ? (
-                  <div className={styles.dialogActions}>{actions}</div>
-                ) : null}
-              </motion.div>
-            </Dialog.Content>
+            <div className={styles.dialogPositioner}>
+              <Dialog.Content asChild aria-labelledby={titleId}>
+                <motion.div
+                  className={styles.dialog}
+                  initial={reduceMotion ? false : { opacity: 0, scale: 0.98, y: 8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                >
+                  <Dialog.Title id={titleId} className={styles.dialogTitle}>
+                    {title}
+                  </Dialog.Title>
+                  <div className={styles.dialogBody}>{children}</div>
+                  {actions ? (
+                    <div className={styles.dialogActions}>{actions}</div>
+                  ) : null}
+                </motion.div>
+              </Dialog.Content>
+            </div>
           </Dialog.Portal>
         ) : null}
       </AnimatePresence>
@@ -92,31 +126,33 @@ export function AdminConfirmDialog({
     >
       <AlertDialog.Portal>
         <AlertDialog.Overlay className={styles.dialogBackdrop} />
-        <AlertDialog.Content className={styles.dialog}>
-          <AlertDialog.Title className={styles.dialogTitle}>
-            {title}
-          </AlertDialog.Title>
-          <AlertDialog.Description className={styles.dialogBody}>
-            {description}
-          </AlertDialog.Description>
-          <div className={styles.dialogActions}>
-            <AlertDialog.Cancel asChild>
-              <button type="button" className={styles.btnGhost} onClick={onClose}>
-                Cancelar
-              </button>
-            </AlertDialog.Cancel>
-            <AlertDialog.Action asChild>
-              <button
-                type="button"
-                className={styles.btnDanger}
-                disabled={busy}
-                onClick={onConfirm}
-              >
-                {confirmLabel}
-              </button>
-            </AlertDialog.Action>
-          </div>
-        </AlertDialog.Content>
+        <div className={styles.dialogPositioner}>
+          <AlertDialog.Content className={styles.dialog}>
+            <AlertDialog.Title className={styles.dialogTitle}>
+              {title}
+            </AlertDialog.Title>
+            <AlertDialog.Description className={styles.dialogBody}>
+              {description}
+            </AlertDialog.Description>
+            <div className={styles.dialogActions}>
+              <AlertDialog.Cancel asChild>
+                <button type="button" className={styles.btnGhost} onClick={onClose}>
+                  Cancelar
+                </button>
+              </AlertDialog.Cancel>
+              <AlertDialog.Action asChild>
+                <button
+                  type="button"
+                  className={styles.btnDanger}
+                  disabled={busy}
+                  onClick={onConfirm}
+                >
+                  {confirmLabel}
+                </button>
+              </AlertDialog.Action>
+            </div>
+          </AlertDialog.Content>
+        </div>
       </AlertDialog.Portal>
     </AlertDialog.Root>
   );

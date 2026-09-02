@@ -267,6 +267,70 @@ test.describe("admin rotas e viewports", () => {
     }
   });
 
+  test("AdminModal Novo vendedor: visível, foco, Escape e backdrop", async ({
+    page,
+  }) => {
+    await seedSession(page, "admin");
+    await page.goto("/admin/vendedores");
+    await expect(page.getByRole("heading", { name: "Vendedores" })).toBeVisible({
+      timeout: 15_000,
+    });
+
+    const openButton = page.getByRole("button", { name: "Novo vendedor" });
+    await expect(openButton).toBeVisible();
+    await openButton.click();
+
+    const dialog = page.getByRole("dialog", { name: "Novo vendedor" });
+    await expect(dialog).toBeVisible();
+    await expect(
+      dialog.getByRole("heading", { name: "Novo vendedor" }),
+    ).toBeVisible();
+
+    const focusInside = await page.evaluate(() => {
+      const active = document.activeElement;
+      const el = document.querySelector('[role="dialog"]');
+      return Boolean(el && active && el.contains(active));
+    });
+    expect(focusInside).toBe(true);
+
+    const box = await dialog.boundingBox();
+    expect(box).not.toBeNull();
+    const viewport = page.viewportSize();
+    expect(viewport).not.toBeNull();
+    if (box && viewport) {
+      expect(box.width).toBeGreaterThan(0);
+      expect(box.height).toBeGreaterThan(0);
+      expect(box.x + box.width).toBeGreaterThan(0);
+      expect(box.y + box.height).toBeGreaterThan(0);
+      expect(box.x).toBeLessThan(viewport.width);
+      expect(box.y).toBeLessThan(viewport.height);
+      // Maior parte do diálogo dentro da viewport (com margem de 1px)
+      expect(box.x).toBeGreaterThanOrEqual(-1);
+      expect(box.y).toBeGreaterThanOrEqual(-1);
+      expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
+      expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
+    }
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(openButton).toBeFocused();
+
+    await openButton.click();
+    await expect(dialog).toBeVisible();
+
+    // Clique no canto da viewport atinge o Overlay (positioner tem pointer-events: none).
+    await page.mouse.click(8, 8);
+    await expect(dialog).toBeHidden();
+
+    const scrollLockCleared = await page.evaluate(() => {
+      const body = document.body;
+      const overflow = getComputedStyle(body).overflow;
+      const lockedAttr = body.getAttribute("data-scroll-locked");
+      return overflow !== "hidden" && lockedAttr == null;
+    });
+    expect(scrollLockCleared).toBe(true);
+  });
+
   for (const viewport of VIEWPORTS) {
     test(`sem overflow horizontal em ${viewport.name}`, async ({ page }) => {
       await page.setViewportSize({
