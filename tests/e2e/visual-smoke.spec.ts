@@ -145,6 +145,6 @@ test.describe("área autenticada (demo)", () => {
     await seedDemoSession(page, "customer");
     await page.goto("/minha-conta");
     await expect(page).toHaveURL(/\/minha-conta/, { timeout: 15_000 });
-    await expect(page.getByRole("heading", { name: /Olá|conta|Bem/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Resumo da Conta" })).toBeVisible();
   });
 });

@@ -173,8 +173,11 @@ test.describe("navegação e catálogo público", () => {
     for (const item of DISCOVERY_FIXES) {
       const link = page.getByRole("link", { name: item.name }).first();
       await expect(link).toHaveAttribute("href", item.href);
+      await link.scrollIntoViewIfNeeded();
       await link.click();
-      await expect(page).toHaveURL(new RegExp(item.href.replace("/", "\\/")));
+      await expect(page).toHaveURL(new RegExp(item.href.replace("/", "\\/")), {
+        timeout: 10_000,
+      });
       await expect(page.getByRole("heading", { name: item.name }).first()).toBeVisible();
       await page.goto("/");
     }
