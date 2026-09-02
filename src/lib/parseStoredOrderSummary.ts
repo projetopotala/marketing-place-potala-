@@ -2,13 +2,15 @@ import type {
   CheckoutAddress,
   CheckoutLineItem,
   CheckoutPaymentMethod,
-  OrderSummary,
+  CurrentOrderSummary,
+  LegacyOrderSummary,
   ShippingOptionId,
+  StoredOrderSummary,
 } from "@/types/cart";
 import { formatCheckoutAddressLabel } from "@/types/cart";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object";
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function isCheckoutAddress(value: unknown): value is CheckoutAddress {
@@ -39,9 +41,11 @@ function normalizeAddress(address: CheckoutAddress): CheckoutAddress {
 /**
  * Lê pedido do sessionStorage.
  * Aceita legado com `address` em vez de `shippingAddress` e e-mail/telefone opcionais.
- * O tipo `OrderSummary` em runtime sempre sai completo.
+ * Retorna CurrentOrderSummary quando há checkoutTransactionId; caso contrário LegacyOrderSummary.
  */
-export function parseStoredOrderSummary(raw: string | null): OrderSummary | null {
+export function parseStoredOrderSummary(
+  raw: string | null,
+): StoredOrderSummary | null {
   if (!raw) return null;
 
   try {
@@ -87,7 +91,7 @@ export function parseStoredOrderSummary(raw: string | null): OrderSummary | null
 
     if (!customerName) return null;
 
-    return {
+    const base = {
       orderId: parsed.orderId,
       items: parsed.items as CheckoutLineItem[],
       subtotal: Number(parsed.subtotal) || 0,
@@ -108,6 +112,23 @@ export function parseStoredOrderSummary(raw: string | null): OrderSummary | null
           ? parsed.createdAt
           : new Date().toISOString(),
     };
+
+    const tx =
+      typeof parsed.checkoutTransactionId === "string" &&
+      parsed.checkoutTransactionId.trim()
+        ? parsed.checkoutTransactionId.trim()
+        : null;
+
+    if (tx) {
+      const current: CurrentOrderSummary = {
+        ...base,
+        checkoutTransactionId: tx,
+      };
+      return current;
+    }
+
+    const legacy: LegacyOrderSummary = { ...base };
+    return legacy;
   } catch {
     return null;
   }

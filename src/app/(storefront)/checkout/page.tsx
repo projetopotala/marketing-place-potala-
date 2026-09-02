@@ -4,13 +4,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useMemo, useState, type FormEvent } from "react";
-import type { CheckoutPaymentMethod, OrderSummary, ShippingOptionId } from "@/types/cart";
+import type {
+  CheckoutPaymentMethod,
+  CurrentOrderSummary,
+  PendingCheckoutOperation,
+  ShippingOptionId,
+} from "@/types/cart";
 import {
   calcLineTotal,
+  clearPendingCheckoutOperation,
+  createCartFingerprint,
+  createCryptoRandomId,
   createOrderId,
+  isPendingAlreadyConfirmed,
   ORDER_STORAGE_KEY,
   PAYMENT_LABELS,
+  readPendingCheckoutOperation,
   SHIPPING_OPTIONS,
+  writePendingCheckoutOperation,
 } from "@/data/cart";
 import { formatPrice } from "@/data/marketplace";
 import { useCart } from "@/context/CartContext";
@@ -30,12 +41,52 @@ interface FormErrors {
   state?: string;
 }
 
+function buildOrderSummary(input: {
+  orderId: string;
+  checkoutTransactionId: string;
+  items: CurrentOrderSummary["items"];
+  subtotal: number;
+  shipping: ShippingOptionId;
+  shippingLabel: string;
+  shippingCost: number;
+  total: number;
+  payment: CheckoutPaymentMethod;
+  paymentLabel: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  shippingAddress: CurrentOrderSummary["shippingAddress"];
+  createdAt: string;
+}): CurrentOrderSummary {
+  return {
+    orderId: input.orderId,
+    checkoutTransactionId: input.checkoutTransactionId,
+    items: input.items,
+    subtotal: input.subtotal,
+    shippingOption: input.shipping,
+    shippingLabel: input.shippingLabel,
+    shippingCost: input.shippingCost,
+    total: input.total,
+    paymentMethod: input.payment,
+    paymentLabel: input.paymentLabel,
+    customerName: input.customerName,
+    customerEmail: input.customerEmail,
+    customerPhone: input.customerPhone,
+    shippingAddress: input.shippingAddress,
+    createdAt: input.createdAt,
+  };
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, subtotal, isReady, clearCart } = useCart();
+  const { items, subtotal, isReady, consumeCheckoutItems } = useCart();
   const { user } = useAuth();
-  const { appendOrderFromCheckout } = useAccountData();
+  const {
+    appendOrderFromCheckout,
+    isHydrated: accountHydrated,
+  } = useAccountData();
   const formId = useId();
+  const [submitting, setSubmitting] = useState(false);
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -57,6 +108,9 @@ export default function CheckoutPage() {
     () => Number((subtotal + shippingOption.cost).toFixed(2)),
     [subtotal, shippingOption.cost],
   );
+
+  const isCustomer = user?.role === "customer";
+  const checkoutUserId = isCustomer ? (user?.userId ?? null) : null;
 
   function validate(): FormErrors {
     const next: FormErrors = {};
@@ -82,18 +136,29 @@ export default function CheckoutPage() {
     return next;
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const nextErrors = validate();
-    setErrors(nextErrors);
+  function resolvePendingOperation(
+    cartFingerprint: string,
+  ):
+    | { ok: true; operation: PendingCheckoutOperation }
+    | { ok: false; error: string } {
+    const existing = readPendingCheckoutOperation();
 
-    if (Object.keys(nextErrors).length > 0) {
-      setStatus("Revise os campos destacados para continuar.");
-      return;
+    if (existing) {
+      if (isPendingAlreadyConfirmed(existing)) {
+        // Pendência já confirmada: limpeza best-effort e nova operação.
+        clearPendingCheckoutOperation();
+      } else if (existing.userId === checkoutUserId) {
+        // Mesmo usuário: reutiliza snapshot (IDs estáveis).
+        return {
+          ok: true,
+          operation: existing,
+        };
+      }
     }
 
-    const order: OrderSummary = {
-      orderId: createOrderId(Math.floor(Math.random() * 90) + 10),
+    const order = buildOrderSummary({
+      orderId: createOrderId(),
+      checkoutTransactionId: createCryptoRandomId(),
       items: items.map((item) => ({
         productId: item.productId,
         slug: item.slug,
@@ -104,11 +169,11 @@ export default function CheckoutPage() {
         lineTotal: calcLineTotal(item.unitPrice, item.quantity),
       })),
       subtotal,
-      shippingOption: shipping,
+      shipping,
       shippingLabel: shippingOption.label,
       shippingCost: shippingOption.cost,
       total,
-      paymentMethod: payment,
+      payment,
       paymentLabel: PAYMENT_LABELS[payment],
       customerName: fullName.trim(),
       customerEmail: email.trim(),
@@ -123,13 +188,102 @@ export default function CheckoutPage() {
         state: state.trim().toUpperCase(),
       },
       createdAt: new Date().toISOString(),
+    });
+
+    const operation: PendingCheckoutOperation = {
+      version: 1,
+      userId: checkoutUserId,
+      cartFingerprint,
+      order,
     };
 
-    window.sessionStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order));
-    if (user?.role === "customer") {
-      appendOrderFromCheckout(order);
+    if (!writePendingCheckoutOperation(operation)) {
+      return {
+        ok: false,
+        error:
+          "Não foi possível registrar a operação de checkout neste navegador. O pedido não foi gravado — tente novamente.",
+      };
     }
-    clearCart();
+
+    return { ok: true, operation };
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const nextErrors = validate();
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      setStatus("Revise os campos destacados para continuar.");
+      return;
+    }
+
+    if (isCustomer && !accountHydrated) {
+      setStatus(
+        "Aguarde o carregamento da sua conta antes de finalizar o pedido.",
+      );
+      return;
+    }
+
+    if (submitting) {
+      return;
+    }
+
+    setSubmitting(true);
+    setStatus(null);
+
+    const cartFingerprint = createCartFingerprint(items);
+    const resolved = resolvePendingOperation(cartFingerprint);
+    if (!resolved.ok) {
+      setSubmitting(false);
+      setStatus(resolved.error);
+      return;
+    }
+
+    let canonicalOrder = resolved.operation.order;
+
+    if (isCustomer) {
+      const result = appendOrderFromCheckout(canonicalOrder);
+      if (result.status === "failed" || result.status === "conflict") {
+        setSubmitting(false);
+        setStatus(result.error);
+        return;
+      }
+
+      if (result.orderId !== canonicalOrder.orderId) {
+        canonicalOrder = {
+          ...canonicalOrder,
+          orderId: result.orderId,
+        };
+        writePendingCheckoutOperation({
+          ...resolved.operation,
+          order: canonicalOrder,
+        });
+      }
+    }
+
+    try {
+      window.sessionStorage.setItem(
+        ORDER_STORAGE_KEY,
+        JSON.stringify(canonicalOrder),
+      );
+    } catch {
+      setSubmitting(false);
+      setStatus(
+        "Não foi possível guardar a confirmação do pedido neste navegador. Tente novamente.",
+      );
+      return;
+    }
+
+    clearPendingCheckoutOperation();
+
+    consumeCheckoutItems(
+      canonicalOrder.items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+    );
+
     router.push("/checkout/sucesso");
   }
 
@@ -158,6 +312,8 @@ export default function CheckoutPage() {
       </div>
     );
   }
+
+  const finalizeDisabled = submitting || (isCustomer && !accountHydrated);
 
   return (
     <div className={styles.page}>
@@ -471,8 +627,18 @@ export default function CheckoutPage() {
               </p>
             ) : null}
 
-            <button type="submit" className={styles.primaryBtn}>
-              Finalizar pedido
+            {isCustomer && !accountHydrated ? (
+              <p role="status" className={styles.status}>
+                Carregando dados da conta…
+              </p>
+            ) : null}
+
+            <button
+              type="submit"
+              className={styles.primaryBtn}
+              disabled={finalizeDisabled}
+            >
+              {submitting ? "Finalizando…" : "Finalizar pedido"}
             </button>
             <Link href="/carrinho" className={styles.secondaryLink}>
               Voltar ao carrinho

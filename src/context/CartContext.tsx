@@ -27,6 +27,13 @@ interface CartContextValue {
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
+  /**
+   * Consome quantidades confirmadas no checkout, preservando
+   * saldos adicionados depois e produtos fora do pedido.
+   */
+  consumeCheckoutItems: (
+    confirmed: Array<{ productId: string; quantity: number }>,
+  ) => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -138,6 +145,47 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
   }, []);
 
+  const consumeCheckoutItems = useCallback(
+    (confirmed: Array<{ productId: string; quantity: number }>) => {
+      setItems((current) => {
+        const toConsume = new Map<string, number>();
+        for (const entry of confirmed) {
+          if (typeof entry.productId !== "string" || !entry.productId.trim()) {
+            continue;
+          }
+          if (
+            typeof entry.quantity !== "number" ||
+            !Number.isFinite(entry.quantity) ||
+            entry.quantity <= 0
+          ) {
+            continue;
+          }
+          const id = entry.productId.trim();
+          toConsume.set(id, (toConsume.get(id) ?? 0) + entry.quantity);
+        }
+
+        if (toConsume.size === 0) {
+          return current;
+        }
+
+        const next: CartItem[] = [];
+        for (const item of current) {
+          const consumeQty = toConsume.get(item.productId) ?? 0;
+          if (consumeQty <= 0) {
+            next.push(item);
+            continue;
+          }
+          const remaining = item.quantity - consumeQty;
+          if (remaining > 0) {
+            next.push({ ...item, quantity: remaining });
+          }
+        }
+        return next;
+      });
+    },
+    [],
+  );
+
   const value = useMemo<CartContextValue>(
     () => ({
       items,
@@ -148,8 +196,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem,
       updateQuantity,
       clearCart,
+      consumeCheckoutItems,
     }),
-    [items, isReady, addItem, removeItem, updateQuantity, clearCart],
+    [
+      items,
+      isReady,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      consumeCheckoutItems,
+    ],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

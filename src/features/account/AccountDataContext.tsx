@@ -23,7 +23,10 @@ import {
   createCustomerAccountSeed,
   isCustomerAccountDb,
 } from "@/features/account/seed";
-import type { OrderSummary } from "@/types/cart";
+import type {
+  AppendCheckoutOrderResult,
+  CurrentOrderSummary,
+} from "@/types/cart";
 import { formatCheckoutAddressLabel } from "@/types/cart";
 
 interface AccountDataContextValue {
@@ -34,7 +37,9 @@ interface AccountDataContextValue {
   saveAddress: (address: Omit<CustomerAddress, "id"> & { id?: string }) => void;
   removeAddress: (id: string) => void;
   setDefaultAddress: (id: string) => void;
-  appendOrderFromCheckout: (order: OrderSummary) => void;
+  appendOrderFromCheckout: (
+    order: CurrentOrderSummary,
+  ) => AppendCheckoutOrderResult;
   submitReview: (input: {
     id: string;
     rating: number;
@@ -85,8 +90,30 @@ function writeDb(db: CustomerAccountDb) {
   );
 }
 
+function tryWriteDb(db: CustomerAccountDb): { ok: true } | { ok: false; error: string } {
+  try {
+    writeDb(db);
+    return { ok: true };
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message.trim()
+        ? error.message
+        : "Não foi possível salvar o pedido na sua conta.";
+    return { ok: false, error: message };
+  }
+}
+
 function uid(prefix: string) {
-  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+  const unique =
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : typeof crypto !== "undefined" &&
+          typeof crypto.getRandomValues === "function"
+        ? Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) =>
+            b.toString(16).padStart(2, "0"),
+          ).join("")
+        : `${Date.now().toString(36)}`;
+  return `${prefix}-${unique}`;
 }
 
 export function AccountDataProvider({ children }: { children: ReactNode }) {
@@ -207,16 +234,58 @@ export function AccountDataProvider({ children }: { children: ReactNode }) {
   );
 
   const appendOrderFromCheckout = useCallback(
-    (order: OrderSummary) => {
-      if (!db) return;
-      if (db.orders.some((item) => item.code === order.orderId)) {
-        return;
+    (order: CurrentOrderSummary): AppendCheckoutOrderResult => {
+      if (!isHydrated) {
+        return {
+          status: "failed",
+          error:
+            "Aguarde o carregamento da sua conta antes de finalizar o pedido.",
+        };
+      }
+
+      if (!db) {
+        return {
+          status: "failed",
+          error:
+            "Não foi possível gravar o pedido na conta. Tente novamente em instantes.",
+        };
+      }
+
+      const transactionId = order.checkoutTransactionId.trim();
+      if (!transactionId) {
+        return {
+          status: "failed",
+          error:
+            "Identidade da operação de checkout ausente. Atualize a página e tente novamente.",
+        };
+      }
+
+      const byTransaction = db.orders.find(
+        (item) => item.checkoutTransactionId === transactionId,
+      );
+      if (byTransaction) {
+        return {
+          status: "already_recorded",
+          orderId: byTransaction.code,
+        };
+      }
+
+      const byCode = db.orders.find((item) => item.code === order.orderId);
+      if (byCode) {
+        // Mesmo código com outra transação (ou legado sem tx) = colisão inconsistente.
+        // Não tratar como a mesma operação só pelo código.
+        return {
+          status: "conflict",
+          error:
+            "Conflito de identidade do pedido. O pedido já existente foi preservado — o carrinho não foi alterado.",
+        };
       }
 
       const { shippingAddress } = order;
       const customerOrder: CustomerOrder = {
         id: uid("cord"),
         code: order.orderId,
+        checkoutTransactionId: transactionId,
         status: "paid",
         createdAt: order.createdAt,
         updatedAt: order.createdAt,
@@ -262,12 +331,24 @@ export function AccountDataProvider({ children }: { children: ReactNode }) {
         ],
       };
 
-      persist({
+      const nextDb: CustomerAccountDb = {
         ...db,
         orders: [customerOrder, ...db.orders],
-      });
+      };
+
+      const written = tryWriteDb(nextDb);
+      if (!written.ok) {
+        return {
+          status: "failed",
+          error:
+            "Não foi possível salvar o pedido na sua conta. O carrinho foi mantido — tente novamente.",
+        };
+      }
+
+      setDb(nextDb);
+      return { status: "created", orderId: customerOrder.code };
     },
-    [db, persist],
+    [db, isHydrated],
   );
 
   const submitReview = useCallback(

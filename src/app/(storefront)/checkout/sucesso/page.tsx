@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { OrderSummary } from "@/types/cart";
+import type { StoredOrderSummary } from "@/types/cart";
 import { formatCheckoutAddressLabel } from "@/types/cart";
 import { ORDER_STORAGE_KEY } from "@/data/cart";
 import { parseStoredOrderSummary } from "@/lib/parseStoredOrderSummary";
@@ -12,7 +12,7 @@ import styles from "./page.module.css";
 
 export default function CheckoutSuccessPage() {
   const { user, isAuthenticated, isHydrated } = useAuth();
-  const [order, setOrder] = useState<OrderSummary | null>(null);
+  const [order, setOrder] = useState<StoredOrderSummary | null>(null);
   const [ready, setReady] = useState(false);
   const [copied, setCopied] = useState(false);
 

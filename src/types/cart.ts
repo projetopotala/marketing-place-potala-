@@ -33,7 +33,8 @@ export interface CheckoutAddress {
   state: string;
 }
 
-export interface OrderSummary {
+/** Campos comuns a resumos de pedido atuais e legados. */
+export interface OrderSummaryBase {
   orderId: string;
   items: CheckoutLineItem[];
   subtotal: number;
@@ -48,6 +49,55 @@ export interface OrderSummary {
   customerPhone: string;
   shippingAddress: CheckoutAddress;
   createdAt: string;
+}
+
+/**
+ * Resumo de checkout atual: identidade de operação obrigatória.
+ * Usado em novas finalizações e em appendOrderFromCheckout.
+ */
+export interface CurrentOrderSummary extends OrderSummaryBase {
+  checkoutTransactionId: string;
+}
+
+/**
+ * Pedido legado já persistido sem identidade de transação.
+ * Consumidores devem tratar a ausência explicitamente.
+ */
+export interface LegacyOrderSummary extends OrderSummaryBase {
+  checkoutTransactionId?: never;
+}
+
+/** Qualquer resumo lido de storage (atual ou legado). */
+export type StoredOrderSummary = CurrentOrderSummary | LegacyOrderSummary;
+
+/**
+ * Alias para o formato atual de checkout.
+ * Novas operações devem usar CurrentOrderSummary (checkoutTransactionId obrigatório).
+ */
+export type OrderSummary = CurrentOrderSummary;
+
+export function isCurrentOrderSummary(
+  order: StoredOrderSummary,
+): order is CurrentOrderSummary {
+  return (
+    typeof order.checkoutTransactionId === "string" &&
+    order.checkoutTransactionId.trim().length > 0
+  );
+}
+
+/** Resultado tipado da gravação do pedido na conta do cliente. */
+export type AppendCheckoutOrderResult =
+  | { status: "created"; orderId: string }
+  | { status: "already_recorded"; orderId: string }
+  | { status: "conflict"; error: string }
+  | { status: "failed"; error: string };
+
+/** Operação de checkout em andamento (idempotência entre retries). */
+export interface PendingCheckoutOperation {
+  version: 1;
+  userId: string | null;
+  cartFingerprint: string;
+  order: CurrentOrderSummary;
 }
 
 export interface AddCartItemInput {

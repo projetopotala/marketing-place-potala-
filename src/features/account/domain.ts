@@ -29,6 +29,8 @@ export interface CustomerOrderTimelineEvent {
 export interface CustomerOrder {
   id: string;
   code: string;
+  /** Idempotência do checkout; ausente em pedidos legados/seed. */
+  checkoutTransactionId?: string;
   status: CustomerOrderStatus;
   createdAt: string;
   updatedAt: string;
