@@ -92,10 +92,15 @@ test.describe("storefront busca e âncoras", () => {
   }) => {
     await page.goto("/");
     const trigger = page.getByRole("button", { name: "Abrir busca da loja" });
+    await expect(trigger).toContainText("Buscar produtos, livros, incensos...");
     await trigger.click();
     const dialog = page.getByRole("dialog", { name: "Busca da loja" });
     await expect(dialog).toBeVisible();
     const input = page.getByRole("combobox", { name: "Termo da busca da loja" });
+    await expect(input).toHaveAttribute(
+      "placeholder",
+      "Buscar produtos, livros, incensos...",
+    );
     await input.fill("japamala");
     const option = dialog.getByRole("option").first();
     await expect(option).toBeVisible();

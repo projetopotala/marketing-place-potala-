@@ -110,18 +110,47 @@ test.describe("navegação e catálogo público", () => {
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
+
+    const desktopNav = page.getByRole("navigation", { name: "Categorias" });
+    await expect(desktopNav.getByRole("link", { name: "Livros", exact: true })).toBeVisible();
+    await expect(desktopNav.getByRole("link", { name: "Incensos", exact: true })).toBeVisible();
+    await expect(desktopNav.getByRole("link", { name: "Cristais", exact: true })).toBeVisible();
+    await expect(desktopNav.getByRole("link", { name: "Acessórios", exact: true })).toBeVisible();
+    await expect(desktopNav.getByRole("link", { name: "Novidades", exact: true })).toBeVisible();
+    await expect(desktopNav.getByRole("link", { name: "Ofertas", exact: true })).toBeVisible();
+    await expect(desktopNav.getByRole("link", { name: "Cursos", exact: true })).toHaveCount(0);
+    await expect(desktopNav.getByRole("link", { name: "Terapias", exact: true })).toHaveCount(0);
+    await expect(desktopNav.getByRole("link", { name: "Meditação", exact: true })).toHaveCount(0);
+
     const trigger = page.getByRole("button", { name: "Categorias" });
     await expect(trigger).toBeVisible();
     await trigger.click();
     await expect(trigger).toHaveAttribute("aria-expanded", "true");
-    await page.getByRole("link", { name: "Cristais", exact: true }).first().click();
+
+    const disclosureList = desktopNav
+      .getByRole("link", { name: "Ver todos os produtos" })
+      .locator("xpath=ancestor::ul[1]");
+    await expect(disclosureList.getByRole("link", { name: "Livros", exact: true })).toBeVisible();
+    await expect(disclosureList.getByRole("link", { name: "Incensos", exact: true })).toBeVisible();
+    await expect(disclosureList.getByRole("link", { name: "Cristais", exact: true })).toBeVisible();
+    await expect(disclosureList.getByRole("link", { name: "Acessórios", exact: true })).toBeVisible();
+    await expect(disclosureList.getByRole("link", { name: "Cursos", exact: true })).toHaveCount(0);
+    await expect(disclosureList.getByRole("link", { name: "Terapias", exact: true })).toHaveCount(0);
+    await expect(disclosureList.getByRole("link", { name: "Meditação", exact: true })).toHaveCount(0);
+
+    await disclosureList.getByRole("link", { name: "Cristais", exact: true }).click();
     await expect(page).toHaveURL(/\/categoria\/cristais/);
     await expect(page.getByRole("heading", { level: 1, name: "Cristais" })).toBeVisible();
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await page.getByRole("button", { name: "Abrir menu de categorias" }).click();
-    await page.getByRole("link", { name: "Livros", exact: true }).click();
+    const mobileNav = page.getByRole("navigation", { name: "Categorias móveis" });
+    await expect(mobileNav.getByRole("link", { name: "Livros", exact: true })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Cursos", exact: true })).toHaveCount(0);
+    await expect(mobileNav.getByRole("link", { name: "Terapias", exact: true })).toHaveCount(0);
+    await expect(mobileNav.getByRole("link", { name: "Meditação", exact: true })).toHaveCount(0);
+    await mobileNav.getByRole("link", { name: "Livros", exact: true }).click();
     await expect(page).toHaveURL(/\/categoria\/livros/);
     await expect(page.getByRole("heading", { level: 1, name: "Livros" })).toBeVisible();
   });

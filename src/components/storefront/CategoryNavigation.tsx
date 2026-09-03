@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { NAV_CATEGORIES } from "@/data/marketplace";
-import { CATALOG_CATEGORIES } from "@/features/catalog/categories";
+import { HEADER_CATEGORIES } from "@/features/catalog/categories";
 import { ChevronDownIcon } from "@/components/storefront/icons";
 
 interface CategoryNavigationProps {
@@ -83,7 +83,7 @@ export function CategoryNavigation({
               Ver todos os produtos
             </Link>
           </li>
-          {CATALOG_CATEGORIES.map((category) => {
+          {HEADER_CATEGORIES.map((category) => {
             const active = pathname === category.href;
             return (
               <li key={category.id}>
@@ -104,7 +104,7 @@ export function CategoryNavigation({
             <span aria-hidden="true" className="mx-2 my-2 block h-px bg-potala-border" />
           </li>
           {topLinks
-            .filter((item) => !CATALOG_CATEGORIES.some((c) => c.id === item.id))
+            .filter((item) => !HEADER_CATEGORIES.some((c) => c.id === item.id))
             .map((item) => {
               const active = isActiveHref(pathname, item.href);
               return (
@@ -166,7 +166,7 @@ export function CategoryNavigation({
                     Ver todos os produtos
                   </Link>
                 </li>
-                {CATALOG_CATEGORIES.map((category) => {
+                {HEADER_CATEGORIES.map((category) => {
                   const active = pathname === category.href;
                   return (
                     <li key={category.id}>

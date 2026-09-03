@@ -1,4 +1,7 @@
-import { CATALOG_CATEGORIES } from "@/features/catalog/categories";
+import {
+  CATALOG_CATEGORIES,
+  HEADER_CATEGORIES,
+} from "@/features/catalog/categories";
 import type {
   CategoryHighlight,
   ContactInfo,
@@ -29,9 +32,10 @@ export const BRAND = {
   logoSrc: "/images/potala/logo-mark.png",
 };
 
+/** Links da barra superior (desktop). Categorias do disclosure vêm de HEADER_CATEGORIES. */
 export const NAV_CATEGORIES: NavCategory[] = [
   { id: "categorias", label: "Categorias", href: "/catalogo", hasMenu: true },
-  ...CATALOG_CATEGORIES.map((category) => ({
+  ...HEADER_CATEGORIES.map((category) => ({
     id: category.id,
     label: category.name,
     href: category.href,

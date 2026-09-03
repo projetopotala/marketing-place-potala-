@@ -1,6 +1,9 @@
 /**
  * Definição central das sete categorias do catálogo público demonstrativo.
- * Menu, cards, filtros, breadcrumbs e contagens devem derivar daqui.
+ * Cards, filtros, breadcrumbs, rotas e contagens devem derivar daqui.
+ *
+ * A navegação do cabeçalho usa um subconjunto explícito (`HEADER_CATEGORY_SLUGS`)
+ * e não remove categorias do domínio — URLs diretas continuam válidas.
  *
  * Nota: estes IDs públicos (`cristais`, `cursos`, …) não se misturam com
  * IDs administrativos (`cat-cristais`, …). Produtos novos aqui são apenas
@@ -18,6 +21,19 @@ export const CATALOG_CATEGORY_IDS = [
 ] as const;
 
 export type CatalogCategoryId = (typeof CATALOG_CATEGORY_IDS)[number];
+
+/**
+ * Categorias promovidas na barra superior e no disclosure “Categorias”.
+ * Não inclui Cursos, Terapias nem Meditação (permanecem no catálogo/rotas).
+ */
+export const HEADER_CATEGORY_SLUGS = [
+  "livros",
+  "incensos",
+  "cristais",
+  "acessorios",
+] as const;
+
+export type HeaderCategoryId = (typeof HEADER_CATEGORY_SLUGS)[number];
 
 export interface CatalogCategory {
   id: CatalogCategoryId;
@@ -125,3 +141,7 @@ export function getCatalogCategoryOrThrow(slug: string): CatalogCategory {
   }
   return category;
 }
+
+/** Categorias do cabeçalho / disclosure, na ordem de `HEADER_CATEGORY_SLUGS`. */
+export const HEADER_CATEGORIES: readonly CatalogCategory[] =
+  HEADER_CATEGORY_SLUGS.map((slug) => getCatalogCategoryOrThrow(slug));

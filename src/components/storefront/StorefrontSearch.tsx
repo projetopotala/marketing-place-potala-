@@ -130,7 +130,7 @@ export function StorefrontSearch() {
             setOpen(true);
           }}
         >
-          <span className="truncate">Buscar produtos, cursos, livros...</span>
+          <span className="truncate">Buscar produtos, livros, incensos...</span>
         </button>
         <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-potala-gold">
           <SearchIcon className="h-5 w-5" aria-hidden="true" />
@@ -151,7 +151,7 @@ export function StorefrontSearch() {
           <CommandInput
             value={query}
             onValueChange={setQuery}
-            placeholder="Buscar produtos, cursos, livros..."
+            placeholder="Buscar produtos, livros, incensos..."
             aria-label="Termo da busca da loja"
           />
           <CommandList>
